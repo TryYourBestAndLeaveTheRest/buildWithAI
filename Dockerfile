@@ -1,24 +1,22 @@
-# Use an official Node.js runtime as a parent image
-FROM node:18-slim
+# Use the official Node.js 20 image.
+# https://hub.docker.com/_/node
+FROM node:20
 
-# Set the working directory in the container
+# Create and change to the app directory.
 WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json (if available)
-# This leverages Docker's layer caching, so dependencies are only re-installed
-# when these files change.
+# Copy application dependency manifests to the container image.
+# A wildcard is used to ensure both package.json AND package-lock.json are copied.
+# Copying this first prevents re-running npm install on every code change.
 COPY package*.json ./
 
-# Install production dependencies
-RUN npm install --production
+# Install production dependencies.
+# If you have native dependencies, you'll need extra tools
+RUN apt-get update && apt-get install -y python3 make g++
+RUN npm install --production --build-from-source=sqlite3
 
-# Copy the rest of the application's source code from the current directory
-# to the working directory in the image
+# Copy local code to the container image.
 COPY . .
 
-# Google Cloud Run expects the container to listen for requests on the port
-# defined by the PORT environment variable. The default is 8080.
-EXPOSE 8080
-
-# Define the command to run your app
+# Run the web service on container startup.
 CMD [ "node", "server.js" ]
