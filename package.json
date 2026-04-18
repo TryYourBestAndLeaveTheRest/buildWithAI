@@ -1,0 +1,15 @@
+{
+  "name": "campus-swap-drop",
+  "version": "1.0.0",
+  "description": "A micro-marketplace for campus items using Express and EJS.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "sqlite3": "^6.0.1"
+  }
+}

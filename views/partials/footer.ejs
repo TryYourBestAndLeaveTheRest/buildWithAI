@@ -1,0 +1,50 @@
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 bg-slate-950/80 py-8">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-slate-500 text-sm">
+                &copy; 2026 Campus Swap & Drop Hub. Built for the Cyber-Campus.
+            </p>
+            <div class="mt-4 flex justify-center space-x-4">
+                <span class="w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></span>
+                <span class="text-xs font-cyber text-cyan-500/50 tracking-widest uppercase">System Online</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Tab switching logic
+        function switchTab(tab) {
+            const haveList = document.getElementById('have-list');
+            const needList = document.getElementById('need-list');
+            const haveBtn = document.getElementById('have-btn');
+            const needBtn = document.getElementById('need-btn');
+
+            if (tab === 'have') {
+                if (haveList) haveList.classList.remove('hidden');
+                if (needList) needList.classList.add('hidden');
+                if (haveBtn) {
+                    haveBtn.classList.add('border-cyan-500', 'text-cyan-400');
+                    haveBtn.classList.remove('border-transparent', 'text-slate-400');
+                }
+                if (needBtn) {
+                    needBtn.classList.remove('border-cyan-500', 'text-cyan-400');
+                    needBtn.classList.add('border-transparent', 'text-slate-400');
+                }
+            } else {
+                if (haveList) haveList.classList.add('hidden');
+                if (needList) needList.classList.remove('hidden');
+                if (needBtn) {
+                    needBtn.classList.add('border-cyan-500', 'text-cyan-400');
+                    needBtn.classList.remove('border-transparent', 'text-slate-400');
+                }
+                if (haveBtn) {
+                    haveBtn.classList.remove('border-cyan-500', 'text-cyan-400');
+                    haveBtn.classList.add('border-transparent', 'text-slate-400');
+                }
+            }
+        }
+    </script>
+</body>
+</html>
