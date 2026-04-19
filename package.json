@@ -5,15 +5,18 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node --watch server.js",
-    "gcp-build": "npm install --build-from-source=sqlite3"
+    "dev": "node --watch server.js"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "compression": "^1.8.1",
+    "connect-mongo": "^6.0.0",
     "ejs": "^3.1.10",
     "express": "^4.19.2",
-    "sqlite3": "^6.0.1"
-  },
-  "engines": {
-    "node": "24.x.x"
+    "express-rate-limit": "^8.3.2",
+    "express-session": "^1.19.0",
+    "express-validator": "^7.3.2",
+    "helmet": "^8.1.0",
+    "mongoose": "^9.4.1"
   }
 }

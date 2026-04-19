@@ -1,19 +1,77 @@
 const express = require('express');
+const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const path = require('path');
-const routes = require('./routes');
+const helmet = require('helmet');
+const compression = require('compression');
+const rateLimit = require('express-rate-limit');
+const connectDB = require('./config/database');
+const mainRoutes = require('./routes/index');
+const errorHandler = require('./middleware/errorHandler');
+
+// Load env vars early
+require('dotenv').config();
+
+// Connect to database
+connectDB();
 
 const app = express();
 
-// Middleware
-app.use(express.urlencoded({ extended: true }));
+// Security & Performance Middleware
+app.use(helmet());
+app.use(compression());
+
+// Rate Limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: 'Too many requests from this IP, please try again after 15 minutes'
+});
+app.use(limiter);
+
+// EJS Setup
+app.set('views', path.join(__dirname, '../views'));
+app.set('view engine', 'ejs');
+
+// Body parser
+app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+
+// Static folder
 app.use(express.static(path.join(__dirname, '../public')));
 
-// View Engine Setup
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, '../views'));
+// Session configuration
+const sessionSecret = process.env.SESSION_SECRET;
+if (!sessionSecret && process.env.NODE_ENV === 'production') {
+  console.error('CRITICAL: SESSION_SECRET is not set in production!');
+  process.exit(1);
+}
+
+app.use(
+  session({
+    secret: sessionSecret || 'dev_secret_only',
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({ 
+      mongoUrl: process.env.MONGO_URI,
+      ttl: 14 * 24 * 60 * 60 // 14 days
+    }),
+    cookie: {
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true,
+      sameSite: 'lax',
+      maxAge: 1000 * 60 * 60 * 24 * 14 // 14 days
+    }
+  })
+);
 
 // Routes
-app.use('/', routes);
+app.use('/', mainRoutes);
 
+// Error Handler (must be after routes)
+app.use(errorHandler);
+
+// Export app
 module.exports = app;

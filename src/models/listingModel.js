@@ -1,23 +1,26 @@
-const { query, run } = require('../config/database');
+const mongoose = require('mongoose');
 
-const Listing = {
-    async getAll() {
-        const sql = 'SELECT * FROM listings ORDER BY created_at DESC';
-        return await query(sql);
-    },
+const ListingSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: true,
+  },
+  description: {
+    type: String,
+    required: true,
+  },
+  price: {
+    type: Number,
+    required: true,
+  },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
 
-    async getByType(type) {
-        const sql = 'SELECT * FROM listings WHERE type = ? ORDER BY created_at DESC';
-        return await query(sql, [type]);
-    },
-
-    async create(listingData) {
-        const { type, title, description, user, dorm, price } = listingData;
-        const sql = `INSERT INTO listings (type, title, description, user, dorm, price) 
-                     VALUES (?, ?, ?, ?, ?, ?)`;
-        const params = [type, title, description, user, dorm, price];
-        return await run(sql, params);
-    }
-};
-
-module.exports = Listing;
+module.exports = mongoose.model('Listing', ListingSchema);
