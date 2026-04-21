@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-slate-950 text-slate-200 min-h-screen flex flex-col;
+  }
+}
+
+@layer components {
+  .glass {
+    @apply bg-slate-900/60 backdrop-blur-lg border border-cyan-500/10;
+  }
+
+  .glow-cyan {
+    @apply shadow-lg shadow-cyan-500/30;
+  }
+
+  .glow-text-cyan {
+    @apply text-shadow-cyan;
+  }
+}
+
+/* Custom scrollbar for cyber look */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #020617;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #22d3ee;
+}

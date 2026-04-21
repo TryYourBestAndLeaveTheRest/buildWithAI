@@ -7,9 +7,9 @@ const validateListing = [
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).render('error', { 
-        title: 'Validation Error', 
-        message: errors.array()[0].msg 
+      return res.status(400).json({
+        success: false,
+        error: errors.array()[0].msg
       });
     }
     next();

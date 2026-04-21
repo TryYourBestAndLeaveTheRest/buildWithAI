@@ -1,0 +1,40 @@
+<%- include('partials/header') %>
+
+<div class="max-w-md mx-auto py-12">
+    <div class="glass p-8 rounded-3xl border-cyan-500/20 shadow-2xl relative overflow-hidden">
+        <!-- Glow accent -->
+        <div class="absolute -top-12 -right-12 w-24 h-24 bg-cyan-500/20 blur-3xl rounded-full"></div>
+        
+        <h2 class="font-cyber text-2xl text-white mb-2">Access Network</h2>
+        <p class="text-slate-500 text-sm mb-8">Enter your credentials to continue.</p>
+
+        <% if (error) { %>
+            <div class="mb-6 p-4 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
+                <%= error %>
+            </div>
+        <% } %>
+
+        <form action="/login" method="POST" class="space-y-6">
+            <div>
+                <label class="block text-xs font-cyber text-slate-500 uppercase tracking-widest mb-2">Campus Email</label>
+                <input type="email" name="email" required placeholder="user@campus.edu" class="w-full bg-slate-900/50 border border-slate-800 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500 transition-colors">
+            </div>
+
+            <div>
+                <label class="block text-xs font-cyber text-slate-500 uppercase tracking-widest mb-2">Password</label>
+                <input type="password" name="password" required placeholder="••••••••" class="w-full bg-slate-900/50 border border-slate-800 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500 transition-colors">
+            </div>
+
+            <button type="submit" class="w-full py-4 rounded-xl bg-cyan-500 text-slate-950 font-bold font-cyber hover:bg-cyan-400 transition-all shadow-lg shadow-cyan-500/20 uppercase tracking-tighter">
+                Access Hub
+            </button>
+        </form>
+
+        <p class="text-center text-slate-500 text-sm mt-8">
+            New to the network? 
+            <a href="/register" class="text-cyan-400 hover:text-cyan-300 transition-colors font-medium">Create profile</a>
+        </p>
+    </div>
+</div>
+
+<%- include('partials/footer') %>
