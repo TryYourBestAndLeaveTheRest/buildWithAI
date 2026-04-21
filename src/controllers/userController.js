@@ -2,22 +2,27 @@ const UserService = require('../services/userService');
 
 const UserController = {
     renderRegister(req, res) {
-        res.render('register', { title: 'Register' });
+        res.render('register', { title: 'Register', session: req.session });
     },
 
     async handleRegister(req, res) {
         try {
             const user = await UserService.registerUser(req.body);
             req.session.userId = user._id;
+            req.session.userName = user.name;
             res.redirect('/');
         } catch (error) {
             console.error('Registration error:', error);
-            res.status(400).json({ success: false, error: error.message });
+            res.status(400).render('register', { 
+                title: 'Register', 
+                error: error.message,
+                session: req.session 
+            });
         }
     },
 
     renderLogin(req, res) {
-        res.render('login', { title: 'Login', error: null });
+        res.render('login', { title: 'Login', error: null, session: req.session });
     },
 
     async handleLogin(req, res) {
@@ -34,7 +39,8 @@ const UserController = {
             console.error('Login error:', error);
             res.status(401).render('login', { 
                 title: 'Login', 
-                error: error.message 
+                error: error.message,
+                session: req.session
             });
         }
     },
@@ -45,7 +51,7 @@ const UserController = {
                 return res.redirect('/login');
             }
             const user = await UserService.getUserById(req.session.userId);
-            res.render('dashboard', { title: 'My Dashboard', user });
+            res.render('dashboard', { title: 'My Dashboard', user, session: req.session });
         } catch (error) {
             console.error('Dashboard render error:', error);
             res.status(500).send('Internal Server Error');

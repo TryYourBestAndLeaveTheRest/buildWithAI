@@ -8,7 +8,7 @@
         <h2 class="font-cyber text-2xl text-white mb-2">Access Network</h2>
         <p class="text-slate-500 text-sm mb-8">Enter your credentials to continue.</p>
 
-        <% if (error) { %>
+        <% if (typeof error !== 'undefined' && error) { %>
             <div class="mb-6 p-4 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
                 <%= error %>
             </div>

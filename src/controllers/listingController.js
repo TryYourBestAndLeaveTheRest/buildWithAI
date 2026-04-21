@@ -7,7 +7,8 @@ const ListingController = {
             res.render('index', {
                 title: 'Home',
                 listings,
-                requests
+                requests,
+                session: req.session
             });
         } catch (error) {
             console.error('Home render error:', error);
