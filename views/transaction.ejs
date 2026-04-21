@@ -71,7 +71,12 @@
               <%= tx.buyer.name[0].toUpperCase() %>
             </div>
             <div>
-              <p class="text-white text-sm font-semibold"><%= tx.buyer.name %> <%= isBuyer ? '<span class="text-cyan-400 text-[10px] font-cyber">(You)</span>' : '' %></p>
+              <p class="text-white text-sm font-semibold">
+                <%= tx.buyer.name %>
+                <% if (isBuyer) { %>
+                  <span class="text-cyan-400 text-[10px] font-cyber">(You)</span>
+                <% } %>
+              </p>
               <p class="text-slate-500 text-[10px] font-cyber uppercase">Buyer &middot; <%= tx.buyer.dorm || '—' %></p>
             </div>
           </div>
@@ -80,7 +85,12 @@
               <%= tx.seller.name[0].toUpperCase() %>
             </div>
             <div>
-              <p class="text-white text-sm font-semibold"><%= tx.seller.name %> <%= isSeller ? '<span class="text-cyan-400 text-[10px] font-cyber">(You)</span>' : '' %></p>
+              <p class="text-white text-sm font-semibold">
+                <%= tx.seller.name %>
+                <% if (isSeller) { %>
+                  <span class="text-cyan-400 text-[10px] font-cyber">(You)</span>
+                <% } %>
+              </p>
               <p class="text-slate-500 text-[10px] font-cyber uppercase">Seller &middot; <%= tx.seller.dorm || '—' %></p>
             </div>
           </div>

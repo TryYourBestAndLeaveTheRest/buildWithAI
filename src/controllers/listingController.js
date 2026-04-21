@@ -42,6 +42,7 @@ const ListingController = {
             const NotificationService = require('../services/notificationService');
             const Listing = require('../models/listingModel');
             const listing = await Listing.findById(id).lean();
+
             if (listing) {
                 await NotificationService.notify(
                     listing.user,

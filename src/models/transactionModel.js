@@ -52,19 +52,10 @@ const TransactionSchema = new mongoose.Schema({
     type: [TransactionCommentSchema],
     default: []
   },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now
-  }
-});
+},{
+  timestamps: true,
 
-TransactionSchema.pre('save', function updateTimestamp(next) {
-  this.updatedAt = new Date();
-  next();
-});
+}
+);
 
 module.exports = mongoose.model('Transaction', TransactionSchema);

@@ -42,10 +42,8 @@ const ListingSchema = new mongoose.Schema({
     ref: 'User',
     default: null
   },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
+}, {
+  timestamps: true,
 });
 
 /**

@@ -9,7 +9,6 @@ function deriveRoles(listing, actorId, action) {
     if (ownerId === currentId) {
         throw new Error('You cannot interact with your own post');
     }
-
     if (listing.type === 'have' && action !== 'buy') {
         throw new Error('Invalid action for this post');
     }
@@ -63,12 +62,15 @@ const ListingService = {
     async startBargaining(listingId, actorId, action, comment = '') {
         // Use a MongoDB session for atomicity if replica set is available.
         // Falls back gracefully if sessions are not supported (standalone MongoDB).
-        const session = await mongoose.startSession().catch(() => null);
+        let session;
+        try {
+            session = await mongoose.startSession();
+        } catch (err) {
+            session = null;
+        }
 
         const run = async (sess) => {
-            const opts = sess ? { session: sess } : {};
-
-            const listing = await Listing.findById(listingId).session(sess || null);
+            const listing = await Listing.findById(listingId);
             if (!listing) {
                 throw new Error('Listing not found');
             }
@@ -92,11 +94,21 @@ const ListingService = {
                 transactionPayload.comments = [{ author: actorId, text: trimmedComment }];
             }
 
-            const [transaction] = await Transaction.create([transactionPayload], opts);
+            let transaction;
+            if (sess) {
+                [transaction] = await Transaction.create([transactionPayload], { session: sess });
+            } else {
+                [transaction] = await Transaction.create([transactionPayload]);
+            }
 
             listing.status = 'bargaining';
             listing.activeBargainer = actorId;
-            await listing.save(opts);
+            
+            if (sess) {
+                await listing.save({ session: sess });
+            } else {
+                await listing.save();
+            }
 
             return transaction;
         };
