@@ -79,6 +79,18 @@ app.use(
   })
 );
 
+// Shared auth state for all EJS views (layout/header and pages)
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = Boolean(req.session && req.session.userId);
+  res.locals.currentUser = req.session && req.session.userId
+    ? {
+        id: req.session.userId,
+        name: req.session.userName || ''
+      }
+    : null;
+  next();
+});
+
 // Routes
 app.use('/', mainRoutes);
 

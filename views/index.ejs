@@ -2,7 +2,7 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
         <!-- Left Sidebar: Form -->
-        <% if (!user) { %>
+        <% if (!isAuthenticated) { %>
             <div class="mb-6 glass p-6 rounded-xl text-center border-yellow-500/20 bg-yellow-900/10">
                 <p class="text-yellow-400 font-cyber text-sm">⚠️ You are currently browsing as a guest. Log in to create
                     posts.</p>
