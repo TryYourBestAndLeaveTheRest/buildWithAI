@@ -12,7 +12,7 @@ const UserService = {
 
     async getUserProfile() {
         // Get the first user for the current simple dashboard
-        return await User.getFirst();
+        return await User.find().sort({ createdAt: -1 }).limit(1);
     }
 };
 

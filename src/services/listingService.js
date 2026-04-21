@@ -1,5 +1,4 @@
 const Listing = require('../models/listingModel');
-
 const ListingService = {
     async getHomeData() {
         const listings = await Listing.getByType('have');

@@ -4,10 +4,10 @@ const ListingController = {
     async renderHome(req, res) {
         try {
             const { listings, requests } = await ListingService.getHomeData();
-            res.render('index', { 
-                title: 'Home', 
-                listings, 
-                requests 
+            res.render('index', {
+                title: 'Home',
+                listings,
+                requests
             });
         } catch (error) {
             console.error('Home render error:', error);
