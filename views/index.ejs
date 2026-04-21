@@ -2,14 +2,8 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
         <!-- Left Sidebar: Form -->
-        <% if (!isAuthenticated) { %>
-            <div class="mb-6 glass p-6 rounded-xl text-center border-yellow-500/20 bg-yellow-900/10">
-                <p class="text-yellow-400 font-cyber text-sm">⚠️ You are currently browsing as a guest. Log in to create
-                    posts.</p>
-            </div>
-            <% } %>
-
-                <aside class="lg:col-span-4 space-y-6">
+        <aside class="lg:col-span-4 space-y-6">
+            <% if (isAuthenticated) { %>
                     <div class="glass p-6 rounded-3xl border-cyan-500/20 shadow-2xl p-4">
                         <h2 class="font-cyber text-lg text-cyan-400 mb-6 flex items-center">
                             <span class="w-1.5 h-6 bg-cyan-500 rounded-full mr-3"></span>
@@ -74,7 +68,16 @@
                             </button>
                         </form>
                     </div>
-                </aside>
+            <% } else { %>
+                <div class="glass p-6 rounded-3xl border-yellow-500/20 bg-yellow-900/10 shadow-2xl">
+                    <h2 class="font-cyber text-lg text-yellow-400 mb-3">Drop / Request</h2>
+                    <p class="text-slate-300 text-sm mb-4">You can browse the feed as a guest, but posting requires login.</p>
+                    <a href="/login" class="inline-flex items-center justify-center w-full py-3 rounded-xl bg-cyan-500 text-slate-950 font-bold font-cyber hover:bg-cyan-400 transition-all shadow-lg shadow-cyan-500/20 uppercase tracking-tighter">
+                        Login to Post
+                    </a>
+                </div>
+            <% } %>
+        </aside>
 
                 <!-- Right Content: Feed -->
                 <section class="lg:col-span-8">
