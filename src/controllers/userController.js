@@ -10,7 +10,7 @@ const UserController = {
             const user = await UserService.registerUser(req.body);
             req.session.userId = user._id;
             req.session.userName = user.name;
-            res.redirect('/');
+            req.session.save(() => res.redirect('/'));
         } catch (error) {
             console.error('Registration error:', error);
             res.status(400).render('register', {
@@ -39,7 +39,7 @@ const UserController = {
                 userId: String(req.session.userId),
                 userName: req.session.userName
             });
-            res.redirect('/dashboard');
+            req.session.save(() => res.redirect('/dashboard'));
         } catch (error) {
             console.error('Login error:', error);
             res.status(401).render('login', {

@@ -18,7 +18,10 @@ const ListingController = {
 
     async createListing(req, res) {
         try {
-            await ListingService.addListing(req.body);
+            await ListingService.addListing({
+                ...req.body,
+                user: req.session.userId
+            });
             res.redirect('/');
         } catch (error) {
             console.error('Create listing error:', error);
