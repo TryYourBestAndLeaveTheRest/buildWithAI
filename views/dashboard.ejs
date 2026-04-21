@@ -1,66 +1,80 @@
 <%- include('partials/header') %>
 
-<div class="max-w-5xl mx-auto py-10">
+<div class="max-w-6xl mx-auto py-8 lg:py-12 px-4">
 
   <!-- Page header -->
-  <div class="flex items-center justify-between mb-10">
+  <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12">
     <div>
-      <h1 class="font-cyber text-3xl font-bold text-white tracking-tight">Dashboard</h1>
-      <p class="text-slate-500 text-sm mt-1">Your campus network hub</p>
+      <div class="flex items-center gap-3 mb-2">
+        <div class="w-1.5 h-8 bg-cyan-500 rounded-full"></div>
+        <h1 class="font-cyber text-3xl font-bold text-white tracking-tight uppercase">Dashboard</h1>
+      </div>
+      <p class="text-slate-500 text-sm ml-4.5">Central Processing Unit &middot; <%= user.name %></p>
     </div>
-    <div class="px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-cyber uppercase tracking-widest">
-      <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse inline-block mr-2"></span>
-      Online
+    <div class="px-5 py-2 rounded-2xl bg-cyan-500/5 border border-cyan-500/20 text-cyan-400 text-[10px] font-cyber uppercase tracking-[0.2em] flex items-center self-start sm:self-auto">
+      <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse inline-block mr-3"></span>
+      System Active
     </div>
   </div>
 
   <% if (typeof flash !== 'undefined' && flash) { %>
-    <div class="mb-6 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-sm font-cyber uppercase tracking-widest">
-      <%= flash === 'canceled' ? '✖ Transaction canceled — listing is back to active.' : flash %>
+    <div class="mb-8 p-5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-cyber uppercase tracking-widest flex items-center gap-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+        </svg>
+        <%= flash === 'canceled' ? 'Transaction canceled — listing is back to active.' : flash %>
     </div>
   <% } %>
 
   <% if (user) { %>
 
     <!-- User stats strip -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
-      <div class="glass p-5 rounded-2xl border border-white/5 text-center">
-        <p class="text-3xl font-bold text-white mb-1"><%= myListings.length %></p>
-        <p class="text-slate-500 text-[10px] font-cyber uppercase tracking-widest">My Listings</p>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-12">
+      <div class="glass p-6 rounded-3xl border-white/5 relative overflow-hidden group transition-all hover:border-white/10">
+        <div class="absolute -bottom-4 -right-4 text-white/5 font-cyber text-6xl select-none group-hover:text-white/10 transition-colors">01</div>
+        <p class="text-4xl font-bold text-white mb-2 relative z-10"><%= myListings.length %></p>
+        <p class="text-slate-500 text-[9px] font-cyber uppercase tracking-[0.2em] relative z-10">Total Transmissions</p>
       </div>
-      <div class="glass p-5 rounded-2xl border border-white/5 text-center">
-        <p class="text-3xl font-bold text-cyan-400 mb-1"><%= offersReceived.filter(t => t.status === 'pending').length %></p>
-        <p class="text-slate-500 text-[10px] font-cyber uppercase tracking-widest">Offers In</p>
+      <div class="glass p-6 rounded-3xl border-white/5 relative overflow-hidden group transition-all hover:border-white/10">
+        <div class="absolute -bottom-4 -right-4 text-cyan-500/5 font-cyber text-6xl select-none group-hover:text-cyan-500/10 transition-colors">02</div>
+        <p class="text-4xl font-bold text-cyan-400 mb-2 relative z-10"><%= offersReceived.filter(t => t.status === 'pending').length %></p>
+        <p class="text-slate-500 text-[9px] font-cyber uppercase tracking-[0.2em] relative z-10">Incoming Offers</p>
       </div>
-      <div class="glass p-5 rounded-2xl border border-white/5 text-center">
-        <p class="text-3xl font-bold text-amber-400 mb-1"><%= offersSent.filter(t => t.status === 'pending').length %></p>
-        <p class="text-slate-500 text-[10px] font-cyber uppercase tracking-widest">Offers Out</p>
+      <div class="glass p-6 rounded-3xl border-white/5 relative overflow-hidden group transition-all hover:border-white/10">
+        <div class="absolute -bottom-4 -right-4 text-amber-500/5 font-cyber text-6xl select-none group-hover:text-amber-500/10 transition-colors">03</div>
+        <p class="text-4xl font-bold text-amber-400 mb-2 relative z-10"><%= offersSent.filter(t => t.status === 'pending').length %></p>
+        <p class="text-slate-500 text-[9px] font-cyber uppercase tracking-[0.2em] relative z-10">Outgoing Signals</p>
       </div>
-      <div class="glass p-5 rounded-2xl border border-white/5 text-center">
-        <p class="text-3xl font-bold text-green-400 mb-1"><%= [...offersReceived, ...offersSent].filter(t => t.status === 'completed').length %></p>
-        <p class="text-slate-500 text-[10px] font-cyber uppercase tracking-widest">Completed</p>
+      <div class="glass p-6 rounded-3xl border-white/5 relative overflow-hidden group transition-all hover:border-white/10">
+        <div class="absolute -bottom-4 -right-4 text-green-500/5 font-cyber text-6xl select-none group-hover:text-green-500/10 transition-colors">04</div>
+        <p class="text-4xl font-bold text-green-400 mb-2 relative z-10"><%= [...offersReceived, ...offersSent].filter(t => t.status === 'completed').length %></p>
+        <p class="text-slate-500 text-[9px] font-cyber uppercase tracking-[0.2em] relative z-10">Successful Swaps</p>
       </div>
     </div>
 
     <!-- Profile strip -->
-    <div class="glass p-6 rounded-2xl border border-white/5 mb-8 flex flex-wrap gap-6">
-      <div>
-        <p class="text-slate-500 text-[10px] font-cyber uppercase mb-1">Identity</p>
-        <p class="text-white font-bold"><%= user.name %></p>
+    <div class="glass p-8 rounded-3xl border-white/5 mb-10 flex flex-wrap items-center gap-x-12 gap-y-6 relative overflow-hidden group">
+      <div class="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+      <div class="min-w-[120px]">
+        <p class="text-slate-500 text-[9px] font-cyber uppercase tracking-widest mb-2">Network ID</p>
+        <p class="text-white font-bold text-sm"><%= user.name %></p>
       </div>
-      <div>
-        <p class="text-slate-500 text-[10px] font-cyber uppercase mb-1">Email</p>
-        <p class="text-white font-bold"><%= user.email %></p>
+      <div class="min-w-[180px]">
+        <p class="text-slate-500 text-[9px] font-cyber uppercase tracking-widest mb-2">Comms Channel</p>
+        <p class="text-white font-bold text-sm"><%= user.email %></p>
       </div>
       <% if (user.dorm) { %>
-        <div>
-          <p class="text-slate-500 text-[10px] font-cyber uppercase mb-1">Station</p>
-          <p class="text-white font-bold"><%= user.dorm %></p>
+        <div class="min-w-[120px]">
+          <p class="text-slate-500 text-[9px] font-cyber uppercase tracking-widest mb-2">Station</p>
+          <p class="text-white font-bold text-sm flex items-center gap-2">
+            <span class="w-1.5 h-1.5 bg-cyan-500 rounded-full"></span>
+            <%= user.dorm %>
+          </p>
         </div>
       <% } %>
-      <div>
-        <p class="text-slate-500 text-[10px] font-cyber uppercase mb-1">Member Since</p>
-        <p class="text-white font-bold"><%= new Date(user.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) %></p>
+      <div class="ml-auto">
+        <p class="text-slate-500 text-[9px] font-cyber uppercase tracking-widest mb-2">Active Since</p>
+        <p class="text-slate-300 font-bold text-sm"><%= new Date(user.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) %></p>
       </div>
     </div>
 

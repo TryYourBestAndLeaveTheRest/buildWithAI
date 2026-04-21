@@ -52,14 +52,26 @@ document.addEventListener('DOMContentLoaded', () => {
   const menuOverlay  = document.getElementById('menu-overlay');
 
   function openMenu() {
-    mobileMenu  && mobileMenu.classList.add('open');
-    menuOverlay && menuOverlay.classList.add('open');
+    if (mobileMenu) {
+      mobileMenu.classList.remove('drawer-closed');
+      mobileMenu.classList.add('drawer-open');
+    }
+    if (menuOverlay) {
+      menuOverlay.classList.remove('overlay-hidden');
+      menuOverlay.classList.add('overlay-visible');
+    }
     document.body.style.overflow = 'hidden';
   }
 
   function closeMenu() {
-    mobileMenu  && mobileMenu.classList.remove('open');
-    menuOverlay && menuOverlay.classList.remove('open');
+    if (mobileMenu) {
+      mobileMenu.classList.add('drawer-closed');
+      mobileMenu.classList.remove('drawer-open');
+    }
+    if (menuOverlay) {
+      menuOverlay.classList.add('overlay-hidden');
+      menuOverlay.classList.remove('overlay-visible');
+    }
     document.body.style.overflow = '';
   }
 
