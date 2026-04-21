@@ -13,10 +13,10 @@ const UserController = {
             res.redirect('/');
         } catch (error) {
             console.error('Registration error:', error);
-            res.status(400).render('register', { 
-                title: 'Register', 
+            res.status(400).render('register', {
+                title: 'Register',
                 error: error.message,
-                session: req.session 
+                session: req.session
             });
         }
     },
@@ -29,16 +29,21 @@ const UserController = {
         try {
             const { email, password } = req.body;
             const user = await UserService.loginUser(email, password);
-            
-            // Store user ID in session
+
+            // Store user ID in sessio
             req.session.userId = user._id;
             req.session.userName = user.name;
-            
+
+            console.log('LOGIN SESSION SAVED', {
+                sessionId: req.sessionID,
+                userId: String(req.session.userId),
+                userName: req.session.userName
+            });
             res.redirect('/dashboard');
         } catch (error) {
             console.error('Login error:', error);
-            res.status(401).render('login', { 
-                title: 'Login', 
+            res.status(401).render('login', {
+                title: 'Login',
                 error: error.message,
                 session: req.session
             });

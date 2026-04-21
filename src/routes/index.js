@@ -3,21 +3,22 @@ const router = express.Router();
 const ListingController = require('../controllers/listingController');
 const UserController = require('../controllers/userController');
 const { validateListing, validateRegistration, validateLogin } = require('../middleware/validator');
+const { requireAuth, redirectIfAuthenticated } = require('../middleware/auth');
 
 // Home & Listings
-router.get('/', ListingController.renderHome);
-router.post('/items/new', validateListing, ListingController.createListing);
+router.get('/', requireAuth, ListingController.renderHome);
+router.post('/items/new', requireAuth, validateListing, ListingController.createListing);
 
 // User registration
-router.get('/register', UserController.renderRegister);
-router.post('/register', validateRegistration, UserController.handleRegister);
+router.get('/register', redirectIfAuthenticated, UserController.renderRegister);
+router.post('/register', redirectIfAuthenticated, validateRegistration, UserController.handleRegister);
 
 // User login
-router.get('/login', UserController.renderLogin);
-router.post('/login', validateLogin, UserController.handleLogin);
+router.get('/login', redirectIfAuthenticated, UserController.renderLogin);
+router.post('/login', redirectIfAuthenticated, validateLogin, UserController.handleLogin);
 
 // User dashboard & logout
-router.get('/dashboard', UserController.renderDashboard);
-router.get('/logout', UserController.logout);
+router.get('/dashboard', requireAuth, UserController.renderDashboard);
+router.get('/logout', requireAuth, UserController.logout);
 
 module.exports = router;

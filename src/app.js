@@ -61,6 +61,9 @@ if (!sessionSecret && process.env.NODE_ENV === 'production') {
   process.exit(1);
 }
 
+const useSecureCookies =
+  process.env.NODE_ENV === 'production' && process.env.ENABLE_SECURE_COOKIES !== 'false';
+
 app.use(
   session({
     secret: sessionSecret || 'dev_secret_only',
@@ -71,7 +74,7 @@ app.use(
       ttl: 14 * 24 * 60 * 60 // 14 days
     }),
     cookie: {
-      secure: process.env.NODE_ENV === 'production',
+      secure: useSecureCookies,
       httpOnly: true,
       sameSite: 'lax',
       maxAge: 1000 * 60 * 60 * 24 * 14 // 14 days
