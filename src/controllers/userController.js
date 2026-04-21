@@ -1,20 +1,11 @@
 const UserService = require('../services/userService');
 
-async function renderProfileView(req, res, title) {
-    if (!req.session.userId) {
-        return res.redirect('/login');
-    }
-
-    const user = await UserService.getUserById(req.session.userId);
-    res.render('dashboard', { title, user, session: req.session });
-}
-
 const UserController = {
     renderRegister(req, res) {
-        res.render('register', { title: 'Register', session: req.session });
+        res.render('register', { title: 'Register', session: req.session, error: null });
     },
 
-    async handleRegister(req, res) {
+    async handleRegister(req, res, next) {
         try {
             const user = await UserService.registerUser(req.body);
             req.session.userId = user._id;
@@ -25,6 +16,7 @@ const UserController = {
             res.status(400).render('register', {
                 title: 'Register',
                 error: error.message,
+                formData: req.body,
                 session: req.session
             });
         }
@@ -34,20 +26,12 @@ const UserController = {
         res.render('login', { title: 'Login', error: null, session: req.session });
     },
 
-    async handleLogin(req, res) {
+    async handleLogin(req, res, next) {
         try {
             const { email, password } = req.body;
             const user = await UserService.loginUser(email, password);
-
-            // Store user ID in sessio
             req.session.userId = user._id;
             req.session.userName = user.name;
-
-            console.log('LOGIN SESSION SAVED', {
-                sessionId: req.sessionID,
-                userId: String(req.session.userId),
-                userName: req.session.userName
-            });
             req.session.save(() => res.redirect('/dashboard'));
         } catch (error) {
             console.error('Login error:', error);
@@ -59,21 +43,43 @@ const UserController = {
         }
     },
 
-    async renderDashboard(req, res) {
+    async renderDashboard(req, res, next) {
         try {
-            await renderProfileView(req, res, 'My Dashboard');
+            const userId = req.session.userId;
+            const [user, dashData] = await Promise.all([
+                UserService.getUserById(userId),
+                UserService.getDashboardData(userId)
+            ]);
+
+            res.render('dashboard', {
+                title: 'Dashboard',
+                user,
+                ...dashData,
+                flash: req.query.flash || null,
+                session: req.session
+            });
         } catch (error) {
-            console.error('Dashboard render error:', error);
-            res.status(500).send('Internal Server Error');
+            next(error);
         }
     },
 
-    async renderProfile(req, res) {
+    async renderProfile(req, res, next) {
         try {
-            await renderProfileView(req, res, 'My Profile');
+            const userId = req.session.userId;
+            const [user, dashData] = await Promise.all([
+                UserService.getUserById(userId),
+                UserService.getDashboardData(userId)
+            ]);
+
+            res.render('dashboard', {
+                title: 'My Profile',
+                user,
+                ...dashData,
+                flash: null,
+                session: req.session
+            });
         } catch (error) {
-            console.error('Profile render error:', error);
-            res.status(500).send('Internal Server Error');
+            next(error);
         }
     },
 
