@@ -1,22 +1,21 @@
 const ListingService = require('../services/listingService');
 
 const ListingController = {
-    async renderHome(req, res) {
+    async renderHome(req, res, next) {
         try {
-            const { listings, requests } = await ListingService.getHomeData();
+            const page = Math.max(1, parseInt(req.query.page) || 1);
+            const data = await ListingService.getHomeData({ page });
             res.render('index', {
-                title: 'Home',
-                listings,
-                requests,
+                title: 'Feed',
+                ...data,
                 session: req.session
             });
         } catch (error) {
-            console.error('Home render error:', error);
-            res.status(500).send('Internal Server Error');
+            next(error);
         }
     },
 
-    async createListing(req, res) {
+    async createListing(req, res, next) {
         try {
             await ListingService.addListing({
                 ...req.body,
@@ -24,21 +23,39 @@ const ListingController = {
             });
             res.redirect('/');
         } catch (error) {
-            console.error('Create listing error:', error);
-            res.status(500).send('Error creating listing');
+            next(error);
         }
     },
 
-    async interactWithListing(req, res) {
+    async interactWithListing(req, res, next) {
         try {
             const { id } = req.params;
             const { action, comment } = req.body;
+            const transaction = await ListingService.startBargaining(
+                id,
+                req.session.userId,
+                action,
+                comment || ''
+            );
 
-            await ListingService.startBargaining(id, req.session.userId, action, comment || '');
-            res.redirect('/');
+            // Trigger a notification to the listing owner (seller)
+            const NotificationService = require('../services/notificationService');
+            const Listing = require('../models/listingModel');
+            const listing = await Listing.findById(id).lean();
+            if (listing) {
+                await NotificationService.notify(
+                    listing.user,
+                    'new_offer',
+                    transaction._id,
+                    listing._id
+                );
+            }
+
+            res.redirect(`/transactions/${transaction._id}`);
         } catch (error) {
-            console.error('Listing interaction error:', error);
-            res.status(400).send(error.message || 'Unable to start bargaining');
+            // If it's a known user-error, pass it to the error handler with a 400 status
+            if (!error.status) error.status = 400;
+            next(error);
         }
     }
 };

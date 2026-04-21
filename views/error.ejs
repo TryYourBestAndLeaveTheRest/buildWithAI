@@ -1,0 +1,54 @@
+<%- include('partials/header') %>
+
+<div class="max-w-2xl mx-auto py-20 text-center">
+    <div class="glass p-12 rounded-3xl border-red-500/20 shadow-2xl relative overflow-hidden">
+        <!-- Glow accent -->
+        <div class="absolute -top-16 -left-16 w-32 h-32 bg-red-500/10 blur-3xl rounded-full"></div>
+        <div class="absolute -bottom-16 -right-16 w-32 h-32 bg-red-500/10 blur-3xl rounded-full"></div>
+
+        <!-- Error code -->
+        <div class="inline-flex items-center px-4 py-1.5 rounded-full bg-red-500/10 border border-red-500/30 mb-8">
+            <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse mr-2"></span>
+            <span class="text-red-400 text-xs font-cyber uppercase tracking-widest">System Error</span>
+        </div>
+
+        <h1 class="font-cyber text-6xl font-bold text-red-400 mb-4 glow-text-red">
+            <%= statusCode || 500 %>
+        </h1>
+
+        <h2 class="font-cyber text-xl text-white mb-4 tracking-tight">
+            <% if (statusCode === 404) { %>
+                Signal Not Found
+            <% } else if (statusCode === 403) { %>
+                Access Denied
+            <% } else if (statusCode === 429) { %>
+                Rate Limit Exceeded
+            <% } else { %>
+                Transmission Failure
+            <% } %>
+        </h2>
+
+        <p class="text-slate-400 text-sm mb-10 max-w-md mx-auto leading-relaxed">
+            <%= message || 'An unexpected error occurred. Our team has been notified.' %>
+        </p>
+
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="/"
+                class="px-8 py-3 rounded-xl bg-cyan-500 text-slate-950 font-bold font-cyber hover:bg-cyan-400 transition-all shadow-lg shadow-cyan-500/20 uppercase tracking-tighter text-sm">
+                Return to Feed
+            </a>
+            <a href="javascript:history.back()"
+                class="px-8 py-3 rounded-xl border border-white/10 text-slate-400 font-cyber hover:border-cyan-500/40 hover:text-cyan-300 transition-all uppercase tracking-tighter text-sm">
+                Go Back
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .glow-text-red {
+        text-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+    }
+</style>
+
+<%- include('partials/footer') %>

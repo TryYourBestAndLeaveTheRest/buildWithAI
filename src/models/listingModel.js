@@ -4,14 +4,17 @@ const ListingSchema = new mongoose.Schema({
   title: {
     type: String,
     required: true,
+    trim: true,
   },
   description: {
     type: String,
     required: true,
+    trim: true,
   },
   price: {
-    type: Number,
+    type: String,
     required: true,
+    trim: true,
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,
@@ -45,18 +48,23 @@ const ListingSchema = new mongoose.Schema({
   },
 });
 
-const Listing = mongoose.model('Listing', ListingSchema);
-Listing.getByType = async function (type) {
+/**
+ * Fetch listings by type with populated user/bargainer info.
+ * Supports pagination via skip/limit.
+ */
+ListingSchema.statics.getByType = async function (type, { page = 1, limit = 12 } = {}) {
   const query = type ? { type } : {};
-  return this.find(query)
-    .populate('user', 'name')
-    .populate('activeBargainer', 'name')
-    .sort({ createdAt: -1 })
-    .limit(10);
-}
+  const skip = (page - 1) * limit;
+  const [items, total] = await Promise.all([
+    this.find(query)
+      .populate('user', 'name dorm')
+      .populate('activeBargainer', 'name')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit),
+    this.countDocuments(query)
+  ]);
+  return { items, total, page, totalPages: Math.ceil(total / limit) };
+};
 
-Listing.create = async function (listingData) {
-  const listing = new this(listingData);
-  return await listing.save();
-}
-module.exports = Listing;
+module.exports = mongoose.model('Listing', ListingSchema);

@@ -4,70 +4,78 @@
         <!-- Left Sidebar: Form -->
         <aside class="lg:col-span-4 space-y-6">
             <% if (isAuthenticated) { %>
-                    <div class="glass p-6 rounded-3xl border-cyan-500/20 shadow-2xl p-4">
-                        <h2 class="font-cyber text-lg text-cyan-400 mb-6 flex items-center">
-                            <span class="w-1.5 h-6 bg-cyan-500 rounded-full mr-3"></span>
-                            Drop / Request
-                        </h2>
-                        <form action="/items/new" method="POST" class="space-y-4">
-                            <div>
-                                <label
-                                    class="block text-xs font-cyber text-slate-500 uppercase tracking-widest mb-2">Transaction
-                                    Type</label>
-                                <div class="grid grid-cols-2 gap-2">
-                                    <label class="cursor-pointer">
-                                        <input type="radio" name="type" value="have" checked class="peer hidden">
-                                        <div
-                                            class="text-center py-2 rounded-lg border border-slate-800 peer-checked:border-cyan-500 peer-checked:bg-cyan-500/10 peer-checked:text-cyan-400 text-slate-500 text-sm transition-all">
-                                            Have
-                                        </div>
-                                    </label>
-                                    <label class="cursor-pointer">
-                                        <input type="radio" name="type" value="need" class="peer hidden">
-                                        <div
-                                            class="text-center py-2 rounded-lg border border-slate-800 peer-checked:border-cyan-500 peer-checked:bg-cyan-500/10 peer-checked:text-cyan-400 text-slate-500 text-sm transition-all">
-                                            Need
-                                        </div>
-                                    </label>
-                                </div>
-                            </div>
+                <div class="glass p-6 rounded-3xl border-cyan-500/20 shadow-2xl">
+                    <h2 class="font-cyber text-lg text-cyan-400 mb-6 flex items-center">
+                        <span class="w-1.5 h-6 bg-cyan-500 rounded-full mr-3"></span>
+                        Drop / Request
+                    </h2>
 
-                            <div>
-                                <label
-                                    class="block text-xs font-cyber text-slate-500 uppercase tracking-widest mb-2">Item
-                                    Title</label>
-                                <input type="text" name="title" required placeholder="e.g. Dyson Fan"
-                                    class="w-full bg-slate-900/50 border border-slate-800 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500 transition-colors">
-                            </div>
+                    <% if (typeof error !== 'undefined' && error) { %>
+                        <div class="mb-4 p-4 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
+                            <%= error %>
+                        </div>
+                    <% } %>
 
-                            <div>
-                                <label
-                                    class="block text-xs font-cyber text-slate-500 uppercase tracking-widest mb-2">Description</label>
-                                <textarea name="description" required rows="3" placeholder="Condition, specs, etc."
-                                    class="w-full bg-slate-900/50 border border-slate-800 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500 transition-colors"></textarea>
+                    <form action="/items/new" method="POST" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-cyber text-slate-500 uppercase tracking-widest mb-2">Transaction Type</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="type" value="have"
+                                        <%= (typeof formData !== 'undefined' && formData && formData.type === 'need') ? '' : 'checked' %>
+                                        class="peer hidden">
+                                    <div class="text-center py-2 rounded-lg border border-slate-800 peer-checked:border-cyan-500 peer-checked:bg-cyan-500/10 peer-checked:text-cyan-400 text-slate-500 text-sm transition-all">
+                                        Have
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="type" value="need"
+                                        <%= (typeof formData !== 'undefined' && formData && formData.type === 'need') ? 'checked' : '' %>
+                                        class="peer hidden">
+                                    <div class="text-center py-2 rounded-lg border border-slate-800 peer-checked:border-cyan-500 peer-checked:bg-cyan-500/10 peer-checked:text-cyan-400 text-slate-500 text-sm transition-all">
+                                        Need
+                                    </div>
+                                </label>
                             </div>
+                        </div>
 
-                            <div>
-                                <label
-                                    class="block text-xs font-cyber text-slate-500 uppercase tracking-widest mb-2">Dorm</label>
-                                <input type="text" name="dorm" required placeholder="Matrix Hall"
-                                    class="w-full bg-slate-900/50 border border-slate-800 rounded-xl px-4 py-3 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-cyan-500 transition-colors">
-                            </div>
+                        <div>
+                            <label class="block text-xs font-cyber text-slate-500 uppercase tracking-widest mb-2">Item Title</label>
+                            <input type="text" name="title" required
+                                value="<%= (typeof formData !== 'undefined' && formData) ? formData.title || '' : '' %>"
+                                placeholder="e.g. Dyson Fan"
+                                class="w-full bg-slate-900/50 border border-slate-800 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500 transition-colors">
+                        </div>
 
-                            <div>
-                                <label
-                                    class="block text-xs font-cyber text-slate-500 uppercase tracking-widest mb-2">Price
-                                    / Trade</label>
-                                <input type="text" name="price" required placeholder="Free / $10 / Coffee"
-                                    class="w-full bg-slate-900/50 border border-slate-800 rounded-xl px-4 py-3 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-cyan-500 transition-colors">
-                            </div>
+                        <div>
+                            <label class="block text-xs font-cyber text-slate-500 uppercase tracking-widest mb-2">Description</label>
+                            <textarea name="description" required rows="3"
+                                placeholder="Condition, specs, etc."
+                                class="w-full bg-slate-900/50 border border-slate-800 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500 transition-colors"><%= (typeof formData !== 'undefined' && formData) ? formData.description || '' : '' %></textarea>
+                        </div>
 
-                            <button type="submit"
-                                class="w-full py-4 rounded-xl bg-cyan-500 text-slate-950 font-bold font-cyber hover:bg-cyan-400 transition-all shadow-lg shadow-cyan-500/20 uppercase tracking-tighter">
-                                Broadcast to Campus
-                            </button>
-                        </form>
-                    </div>
+                        <div>
+                            <label class="block text-xs font-cyber text-slate-500 uppercase tracking-widest mb-2">Dorm / Location</label>
+                            <input type="text" name="dorm" required
+                                value="<%= (typeof formData !== 'undefined' && formData) ? formData.dorm || '' : '' %>"
+                                placeholder="Matrix Hall"
+                                class="w-full bg-slate-900/50 border border-slate-800 rounded-xl px-4 py-3 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-cyan-500 transition-colors">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-cyber text-slate-500 uppercase tracking-widest mb-2">Price / Trade</label>
+                            <input type="text" name="price" required
+                                value="<%= (typeof formData !== 'undefined' && formData) ? formData.price || '' : '' %>"
+                                placeholder="Free / $10 / Coffee"
+                                class="w-full bg-slate-900/50 border border-slate-800 rounded-xl px-4 py-3 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-cyan-500 transition-colors">
+                        </div>
+
+                        <button type="submit"
+                            class="w-full py-4 rounded-xl bg-cyan-500 text-slate-950 font-bold font-cyber hover:bg-cyan-400 transition-all shadow-lg shadow-cyan-500/20 uppercase tracking-tighter">
+                            Broadcast to Campus
+                        </button>
+                    </form>
+                </div>
             <% } else { %>
                 <div class="glass p-6 rounded-3xl border-yellow-500/20 bg-yellow-900/10 shadow-2xl">
                     <h2 class="font-cyber text-lg text-yellow-400 mb-3">Drop / Request</h2>
@@ -79,44 +87,74 @@
             <% } %>
         </aside>
 
-                <!-- Right Content: Feed -->
-                <section class="lg:col-span-8">
-                    <div class="flex items-center justify-between mb-8 border-b border-white/5 pb-4">
-                        <h1 class="font-cyber text-2xl font-bold text-white tracking-tight">Terminal Feed</h1>
-                        <div class="flex p-1 bg-slate-900 space-x-2 rounded-xl border border-white/5">
-                            <button id="have-btn"
-                                class="px-6 py-2 rounded-lg text-sm font-cyber border-b-2 border-cyan-500 text-cyan-400 transition-all">Available</button>
-                            <button id="need-btn"
-                                class="px-6 py-2 rounded-lg text-sm font-cyber border-b-2 border-transparent text-slate-400 transition-all">Requests</button>
-                        </div>
-                    </div>
+        <!-- Right Content: Feed -->
+        <section class="lg:col-span-8">
+            <div class="flex items-center justify-between mb-8 border-b border-white/5 pb-4">
+                <h1 class="font-cyber text-2xl font-bold text-white tracking-tight">Terminal Feed</h1>
+                <div class="flex p-1 bg-slate-900 space-x-2 rounded-xl border border-white/5">
+                    <button id="have-btn"
+                        class="px-6 py-2 rounded-lg text-sm font-cyber border-b-2 border-cyan-500 text-cyan-400 transition-all">Available</button>
+                    <button id="need-btn"
+                        class="px-6 py-2 rounded-lg text-sm font-cyber border-b-2 border-transparent text-slate-400 transition-all">Requests</button>
+                </div>
+            </div>
 
-                    <div id="have-list" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <% if (listings.length> 0) { %>
-                            <% listings.forEach(item=> { %>
-                                <%- include('partials/_card', { item: item }) %>
-                                    <% }) %>
-                                        <% } else { %>
-                                            <div
-                                                class="col-span-full py-20 text-center glass rounded-3xl border-dashed border-slate-800">
-                                                <p class="text-slate-500 font-cyber">NO ITEMS BROADCASTED</p>
-                                            </div>
-                                            <% } %>
+            <!-- Have (available) listings -->
+            <div id="have-list" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <% if (listings.length > 0) { %>
+                    <% listings.forEach(item => { %>
+                        <%- include('partials/_card', { item: item }) %>
+                    <% }); %>
+                <% } else { %>
+                    <div class="col-span-full py-20 text-center glass rounded-3xl border-dashed border-slate-800">
+                        <p class="text-slate-500 font-cyber">NO ITEMS BROADCASTED</p>
                     </div>
+                <% } %>
+            </div>
 
-                    <div id="need-list" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <% if (requests.length> 0) { %>
-                            <% requests.forEach(item=> { %>
-                                <%- include('partials/_card', { item: item }) %>
-                                    <% }) %>
-                                        <% } else { %>
-                                            <div
-                                                class="col-span-full py-20 text-center glass rounded-3xl border-dashed border-slate-800">
-                                                <p class="text-slate-500 font-cyber">NO ACTIVE REQUESTS</p>
-                                            </div>
-                                            <% } %>
+            <!-- Have pagination -->
+            <% if (havePagination && havePagination.totalPages > 1) { %>
+                <div class="flex justify-center items-center gap-3 mt-8" id="have-pagination">
+                    <% if (havePagination.page > 1) { %>
+                        <a href="?page=<%= havePagination.page - 1 %>" class="px-4 py-2 rounded-xl border border-slate-700 text-slate-400 hover:border-cyan-500/40 hover:text-cyan-300 font-cyber text-xs uppercase transition-all">← Prev</a>
+                    <% } %>
+                    <span class="text-slate-500 text-xs font-cyber uppercase tracking-widest">
+                        Page <%= havePagination.page %> / <%= havePagination.totalPages %>
+                    </span>
+                    <% if (havePagination.page < havePagination.totalPages) { %>
+                        <a href="?page=<%= havePagination.page + 1 %>" class="px-4 py-2 rounded-xl border border-slate-700 text-slate-400 hover:border-cyan-500/40 hover:text-cyan-300 font-cyber text-xs uppercase transition-all">Next →</a>
+                    <% } %>
+                </div>
+            <% } %>
+
+            <!-- Need (request) listings -->
+            <div id="need-list" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6">
+                <% if (requests.length > 0) { %>
+                    <% requests.forEach(item => { %>
+                        <%- include('partials/_card', { item: item }) %>
+                    <% }); %>
+                <% } else { %>
+                    <div class="col-span-full py-20 text-center glass rounded-3xl border-dashed border-slate-800">
+                        <p class="text-slate-500 font-cyber">NO ACTIVE REQUESTS</p>
                     </div>
-                </section>
+                <% } %>
+            </div>
+
+            <!-- Need pagination -->
+            <% if (needPagination && needPagination.totalPages > 1) { %>
+                <div class="hidden justify-center items-center gap-3 mt-8" id="need-pagination">
+                    <% if (needPagination.page > 1) { %>
+                        <a href="?page=<%= needPagination.page - 1 %>" class="px-4 py-2 rounded-xl border border-slate-700 text-slate-400 hover:border-cyan-500/40 hover:text-cyan-300 font-cyber text-xs uppercase transition-all">← Prev</a>
+                    <% } %>
+                    <span class="text-slate-500 text-xs font-cyber uppercase tracking-widest">
+                        Page <%= needPagination.page %> / <%= needPagination.totalPages %>
+                    </span>
+                    <% if (needPagination.page < needPagination.totalPages) { %>
+                        <a href="?page=<%= needPagination.page + 1 %>" class="px-4 py-2 rounded-xl border border-slate-700 text-slate-400 hover:border-cyan-500/40 hover:text-cyan-300 font-cyber text-xs uppercase transition-all">Next →</a>
+                    <% } %>
+                </div>
+            <% } %>
+        </section>
     </div>
 
-    <%- include('partials/footer') %>
+<%- include('partials/footer') %>

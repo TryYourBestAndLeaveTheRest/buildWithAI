@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Listing = require('../models/listingModel');
 const Transaction = require('../models/transactionModel');
 
@@ -33,54 +34,88 @@ function deriveRoles(listing, actorId, action) {
 }
 
 const ListingService = {
-    async getHomeData() {
-        const listings = await Listing.getByType('have');
-        const requests = await Listing.getByType('need');
-        return { listings, requests };
+    async getHomeData({ page = 1 } = {}) {
+        const [haveResult, needResult] = await Promise.all([
+            Listing.getByType('have', { page, limit: 12 }),
+            Listing.getByType('need', { page, limit: 12 })
+        ]);
+        return {
+            listings: haveResult.items,
+            requests: needResult.items,
+            havePagination: {
+                page: haveResult.page,
+                totalPages: haveResult.totalPages,
+                total: haveResult.total
+            },
+            needPagination: {
+                page: needResult.page,
+                totalPages: needResult.totalPages,
+                total: needResult.total
+            }
+        };
     },
 
     async addListing(listingData) {
-        // Here we could add validation, sanitization, etc.
-        return await Listing.create(listingData);
+        const listing = new Listing(listingData);
+        return await listing.save();
     },
 
     async startBargaining(listingId, actorId, action, comment = '') {
-        const listing = await Listing.findById(listingId);
-        if (!listing) {
-            throw new Error('Listing not found');
-        }
+        // Use a MongoDB session for atomicity if replica set is available.
+        // Falls back gracefully if sessions are not supported (standalone MongoDB).
+        const session = await mongoose.startSession().catch(() => null);
 
-        if (listing.status !== 'active') {
-            throw new Error('This listing is not available for new bargaining');
-        }
+        const run = async (sess) => {
+            const opts = sess ? { session: sess } : {};
 
-        const roles = deriveRoles(listing, actorId, action);
+            const listing = await Listing.findById(listingId).session(sess || null);
+            if (!listing) {
+                throw new Error('Listing not found');
+            }
 
-        const transactionPayload = {
-            listing: listing._id,
-            buyer: roles.buyer,
-            seller: roles.seller,
-            initiatorRole: roles.initiatorRole,
-            status: 'pending'
+            if (listing.status !== 'active') {
+                throw new Error('This listing is not available for new bargaining');
+            }
+
+            const roles = deriveRoles(listing, actorId, action);
+
+            const transactionPayload = {
+                listing: listing._id,
+                buyer: roles.buyer,
+                seller: roles.seller,
+                initiatorRole: roles.initiatorRole,
+                status: 'pending'
+            };
+
+            const trimmedComment = comment.trim();
+            if (trimmedComment) {
+                transactionPayload.comments = [{ author: actorId, text: trimmedComment }];
+            }
+
+            const [transaction] = await Transaction.create([transactionPayload], opts);
+
+            listing.status = 'bargaining';
+            listing.activeBargainer = actorId;
+            await listing.save(opts);
+
+            return transaction;
         };
 
-        const trimmedComment = comment.trim();
-        if (trimmedComment) {
-            transactionPayload.comments = [
-                {
-                    author: actorId,
-                    text: trimmedComment
-                }
-            ];
+        if (session) {
+            try {
+                session.startTransaction();
+                const result = await run(session);
+                await session.commitTransaction();
+                return result;
+            } catch (err) {
+                await session.abortTransaction();
+                throw err;
+            } finally {
+                session.endSession();
+            }
+        } else {
+            return run(null);
         }
-
-        const transaction = await Transaction.create(transactionPayload);
-
-        listing.status = 'bargaining';
-        listing.activeBargainer = actorId;
-        await listing.save();
-
-        return transaction;
     }
 };
 

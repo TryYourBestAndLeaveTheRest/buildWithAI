@@ -1,0 +1,57 @@
+<%- include('partials/header') %>
+
+<div class="max-w-2xl mx-auto py-10">
+  <div class="flex items-center justify-between mb-8">
+    <h1 class="font-cyber text-2xl font-bold text-white tracking-tight">Notifications</h1>
+    <% if (notifications.length > 0) { %>
+      <span class="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-cyber uppercase tracking-widest">
+        <%= notifications.length %> total
+      </span>
+    <% } %>
+  </div>
+
+  <% if (notifications.length === 0) { %>
+    <div class="glass p-12 rounded-3xl border-dashed border-slate-800 text-center">
+      <div class="text-4xl mb-4">📭</div>
+      <p class="text-slate-500 font-cyber text-xs uppercase tracking-widest">No notifications yet.</p>
+    </div>
+  <% } else { %>
+    <div class="space-y-3">
+      <% notifications.forEach(n => { %>
+        <%
+          const iconMap = {
+            new_offer:      '💬',
+            offer_accepted: '🤝',
+            offer_declined: '✖',
+            completed:      '✅',
+            canceled:       '✖'
+          };
+          const colorMap = {
+            new_offer:      'border-cyan-500/20',
+            offer_accepted: 'border-cyan-500/30',
+            offer_declined: 'border-red-500/20',
+            completed:      'border-green-500/20',
+            canceled:       'border-slate-700'
+          };
+        %>
+        <a href="/transactions/<%= n.transaction._id %>"
+          class="glass flex items-start gap-4 p-5 rounded-2xl border <%= colorMap[n.type] || 'border-white/5' %> hover:border-cyan-500/30 transition-all group">
+          <span class="text-2xl flex-shrink-0 mt-0.5"><%= iconMap[n.type] || '🔔' %></span>
+          <div class="flex-1 min-w-0">
+            <p class="text-white text-sm group-hover:text-cyan-400 transition-colors font-medium">
+              <%= n.message %>
+            </p>
+            <p class="text-slate-500 text-[10px] font-cyber uppercase tracking-widest mt-1">
+              Re: <%= n.listing ? n.listing.title : 'Listing' %>
+              &middot;
+              <%= new Date(n.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) %>
+            </p>
+          </div>
+          <span class="text-slate-600 group-hover:text-cyan-400 transition-colors text-sm">→</span>
+        </a>
+      <% }); %>
+    </div>
+  <% } %>
+</div>
+
+<%- include('partials/footer') %>

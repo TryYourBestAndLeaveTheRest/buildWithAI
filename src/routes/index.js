@@ -1,26 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const ListingController = require('../controllers/listingController');
-const UserController = require('../controllers/userController');
-const { validateListing, validateRegistration, validateLogin, validateInteraction } = require('../middleware/validator');
-const { requireAuth, redirectIfAuthenticated } = require('../middleware/auth');
 
-// Home & Listings
-router.get('/', requireAuth, ListingController.renderHome);
-router.post('/items/new', requireAuth, validateListing, ListingController.createListing);
-router.post('/items/:id/interact', requireAuth, validateInteraction, ListingController.interactWithListing);
+const listingRoutes     = require('./listings');
+const userRoutes        = require('./users');
+const transactionRoutes = require('./transactions');
 
-// User registration
-router.get('/register', redirectIfAuthenticated, UserController.renderRegister);
-router.post('/register', redirectIfAuthenticated, validateRegistration, UserController.handleRegister);
-
-// User login
-router.get('/login', redirectIfAuthenticated, UserController.renderLogin);
-router.post('/login', redirectIfAuthenticated, validateLogin, UserController.handleLogin);
-
-// User dashboard & logout
-router.get('/dashboard', requireAuth, UserController.renderDashboard);
-router.get('/profile', requireAuth, UserController.renderProfile);
-router.get('/logout', requireAuth, UserController.logout);
+// Mount sub-routers
+router.use('/', listingRoutes);
+router.use('/', userRoutes);
+router.use('/transactions', transactionRoutes);
 
 module.exports = router;

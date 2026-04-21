@@ -1,0 +1,241 @@
+<%- include('partials/header') %>
+
+<%
+  const statusMeta = {
+    pending:   { label: 'Pending',    color: 'amber',  icon: '⏳' },
+    agreed:    { label: 'Agreed',     color: 'cyan',   icon: '🤝' },
+    completed: { label: 'Completed',  color: 'green',  icon: '✅' },
+    canceled:  { label: 'Canceled',   color: 'slate',  icon: '✖' },
+    disputed:  { label: 'Disputed',   color: 'red',    icon: '⚠' }
+  };
+  const meta = statusMeta[tx.status] || statusMeta['pending'];
+  const flash = typeof query !== 'undefined' ? query.flash : null;
+
+  // Role labels
+  const myRole = isBuyer ? 'buyer' : 'seller';
+  const myLabel = isBuyer ? 'You (Buyer)' : 'You (Seller)';
+  const otherParty = isBuyer ? tx.seller : tx.buyer;
+  const otherLabel = isBuyer ? 'Seller' : 'Buyer';
+
+  const canAccept  = isSeller && tx.status === 'pending';
+  const canDecline = isSeller && tx.status === 'pending';
+  const canComplete = (isBuyer || isSeller) && tx.status === 'agreed';
+  const canCancel  = (isBuyer || isSeller) && ['pending', 'agreed'].includes(tx.status);
+  const canComment = (isBuyer || isSeller) && ['pending', 'agreed'].includes(tx.status);
+  const isClosed   = ['completed', 'canceled', 'disputed'].includes(tx.status);
+%>
+
+<div class="max-w-4xl mx-auto py-8">
+
+  <!-- Flash message -->
+  <% if (typeof flash !== 'undefined' && flash) { %>
+    <div class="mb-6 p-4 rounded-xl <%= flash === 'accepted' ? 'bg-cyan-500/10 border border-cyan-500/30 text-cyan-300' : flash === 'completed' ? 'bg-green-500/10 border border-green-500/30 text-green-300' : 'bg-amber-500/10 border border-amber-500/30 text-amber-300' %> text-sm font-cyber uppercase tracking-widest flex items-center gap-3">
+      <span><%= flash === 'accepted' ? '🤝 Offer accepted' : flash === 'completed' ? '✅ Marked as completed' : '✖ Transaction updated' %></span>
+    </div>
+  <% } %>
+
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+    <div>
+      <a href="/dashboard" class="text-xs text-slate-500 hover:text-cyan-400 font-cyber uppercase tracking-widest transition-colors">← Dashboard</a>
+      <h1 class="font-cyber text-2xl font-bold text-white mt-2 tracking-tight">
+        <%= tx.listing.title %>
+      </h1>
+      <p class="text-slate-500 text-sm mt-1">
+        <%= tx.listing.type === 'have' ? '📦 Item for Sale/Trade' : '🔍 Item Request' %> &middot; <%= tx.listing.price %>
+      </p>
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="px-4 py-2 rounded-full text-sm font-cyber uppercase tracking-widest border
+        <%= meta.color === 'amber' ? 'bg-amber-500/10 border-amber-500/30 text-amber-400' :
+            meta.color === 'cyan'  ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-400' :
+            meta.color === 'green' ? 'bg-green-500/10 border-green-500/30 text-green-400' :
+            meta.color === 'red'   ? 'bg-red-500/10 border-red-500/30 text-red-400' :
+                                     'bg-slate-500/10 border-slate-700 text-slate-400' %>">
+        <%= meta.icon %> <%= meta.label %>
+      </span>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <!-- Left: Parties + Actions -->
+    <div class="lg:col-span-1 space-y-4">
+
+      <!-- Parties card -->
+      <div class="glass p-6 rounded-2xl border border-white/5">
+        <h2 class="text-xs font-cyber text-slate-500 uppercase tracking-widest mb-4">Parties</h2>
+        <div class="space-y-3">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-xs text-cyan-400 font-bold">
+              <%= tx.buyer.name[0].toUpperCase() %>
+            </div>
+            <div>
+              <p class="text-white text-sm font-semibold"><%= tx.buyer.name %> <%= isBuyer ? '<span class="text-cyan-400 text-[10px] font-cyber">(You)</span>' : '' %></p>
+              <p class="text-slate-500 text-[10px] font-cyber uppercase">Buyer &middot; <%= tx.buyer.dorm || '—' %></p>
+            </div>
+          </div>
+          <div class="border-t border-white/5 pt-3 flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-slate-700 border border-slate-600 flex items-center justify-center text-xs text-slate-300 font-bold">
+              <%= tx.seller.name[0].toUpperCase() %>
+            </div>
+            <div>
+              <p class="text-white text-sm font-semibold"><%= tx.seller.name %> <%= isSeller ? '<span class="text-cyan-400 text-[10px] font-cyber">(You)</span>' : '' %></p>
+              <p class="text-slate-500 text-[10px] font-cyber uppercase">Seller &middot; <%= tx.seller.dorm || '—' %></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Timeline -->
+      <div class="glass p-6 rounded-2xl border border-white/5">
+        <h2 class="text-xs font-cyber text-slate-500 uppercase tracking-widest mb-4">Status Timeline</h2>
+        <div class="space-y-2">
+          <% const stages = ['pending', 'agreed', 'completed']; %>
+          <% stages.forEach((stage, i) => { %>
+            <%
+              const isDone = stages.indexOf(tx.status) > i ||
+                             (tx.status === stage);
+              const isCurrent = tx.status === stage;
+            %>
+            <div class="flex items-center gap-3">
+              <div class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] border
+                <%= isCurrent ? 'border-cyan-500 bg-cyan-500/20 text-cyan-400' :
+                    isDone    ? 'border-green-500/50 bg-green-500/10 text-green-400' :
+                                'border-slate-700 bg-slate-800/50 text-slate-600' %>">
+                <%= isDone && !isCurrent ? '✓' : (i + 1) %>
+              </div>
+              <span class="text-xs font-cyber uppercase tracking-wider
+                <%= isCurrent ? 'text-cyan-400' : isDone ? 'text-slate-400' : 'text-slate-600' %>">
+                <%= stage %>
+              </span>
+            </div>
+          <% }); %>
+          <% if (tx.status === 'canceled') { %>
+            <div class="flex items-center gap-3 pt-1">
+              <div class="w-5 h-5 rounded-full border border-red-500/50 bg-red-500/10 text-red-400 flex items-center justify-center text-[10px]">✖</div>
+              <span class="text-xs font-cyber uppercase tracking-wider text-red-400">Canceled</span>
+            </div>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <% if (!isClosed) { %>
+        <div class="glass p-6 rounded-2xl border border-white/5 space-y-3">
+          <h2 class="text-xs font-cyber text-slate-500 uppercase tracking-widest mb-1">Actions</h2>
+
+          <% if (canAccept) { %>
+            <form action="/transactions/<%= tx._id %>/accept" method="POST">
+              <input type="hidden" name="comment" value="Offer accepted.">
+              <button type="submit" class="w-full py-3 rounded-xl bg-cyan-500 text-slate-950 font-bold font-cyber text-xs uppercase tracking-widest hover:bg-cyan-400 transition-all shadow-lg shadow-cyan-500/20">
+                ✓ Accept Offer
+              </button>
+            </form>
+          <% } %>
+
+          <% if (canDecline) { %>
+            <form action="/transactions/<%= tx._id %>/decline" method="POST" id="decline-form">
+              <input type="text" name="comment" placeholder="Optional reason for declining..."
+                class="w-full bg-slate-900/50 border border-slate-800 rounded-lg px-3 py-2 text-white text-xs placeholder-slate-600 focus:outline-none focus:border-red-500/50 transition-colors mb-2">
+              <button type="submit" class="w-full py-3 rounded-xl border border-red-500/40 text-red-400 font-cyber text-xs uppercase tracking-widest hover:bg-red-500/10 transition-all">
+                ✖ Decline Offer
+              </button>
+            </form>
+          <% } %>
+
+          <% if (canComplete) { %>
+            <form action="/transactions/<%= tx._id %>/complete" method="POST">
+              <input type="hidden" name="comment" value="Transaction completed.">
+              <button type="submit" class="w-full py-3 rounded-xl bg-green-500/20 border border-green-500/40 text-green-400 font-bold font-cyber text-xs uppercase tracking-widest hover:bg-green-500/30 transition-all">
+                ✅ Mark Complete
+              </button>
+            </form>
+          <% } %>
+
+          <% if (canCancel) { %>
+            <form action="/transactions/<%= tx._id %>/cancel" method="POST">
+              <input type="text" name="comment" placeholder="Reason for canceling (optional)..."
+                class="w-full bg-slate-900/50 border border-slate-800 rounded-lg px-3 py-2 text-white text-xs placeholder-slate-600 focus:outline-none focus:border-slate-600 transition-colors mb-2">
+              <button type="submit"
+                onclick="return confirm('Are you sure you want to cancel this transaction?')"
+                class="w-full py-3 rounded-xl border border-slate-700 text-slate-500 font-cyber text-xs uppercase tracking-widest hover:border-red-500/40 hover:text-red-400 transition-all">
+                Cancel Transaction
+              </button>
+            </form>
+          <% } %>
+        </div>
+      <% } %>
+    </div>
+
+    <!-- Right: Comment thread -->
+    <div class="lg:col-span-2">
+      <div class="glass p-6 rounded-2xl border border-white/5">
+        <h2 class="text-xs font-cyber text-slate-500 uppercase tracking-widest mb-6">
+          Discussion Thread
+          <span class="ml-2 px-2 py-0.5 rounded bg-slate-800 text-slate-400 text-[10px]"><%= tx.comments.length %></span>
+        </h2>
+
+        <!-- Comment list -->
+        <div class="space-y-4 mb-6 max-h-[480px] overflow-y-auto pr-1" id="comment-list">
+          <% if (tx.comments.length === 0) { %>
+            <div class="text-center py-12 text-slate-600 font-cyber text-xs uppercase tracking-widest">
+              No messages yet. Start the conversation.
+            </div>
+          <% } else { %>
+            <% tx.comments.forEach(c => { %>
+              <%
+                const isMe = c.author && String(c.author._id) === String(currentUser.id);
+              %>
+              <div class="flex gap-3 <%= isMe ? 'flex-row-reverse' : '' %>">
+                <div class="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold
+                  <%= isMe ? 'bg-cyan-500/20 border border-cyan-500/40 text-cyan-400' : 'bg-slate-700 border border-slate-600 text-slate-300' %>">
+                  <%= c.author ? c.author.name[0].toUpperCase() : '?' %>
+                </div>
+                <div class="max-w-[75%]">
+                  <div class="rounded-2xl px-4 py-3 text-sm
+                    <%= isMe ? 'bg-cyan-500/10 border border-cyan-500/20 text-cyan-100 rounded-tr-sm' : 'bg-slate-800/70 border border-white/5 text-slate-200 rounded-tl-sm' %>">
+                    <%= c.text %>
+                  </div>
+                  <p class="text-[10px] text-slate-600 mt-1 font-cyber <%= isMe ? 'text-right' : '' %>">
+                    <%= c.author ? c.author.name : 'Unknown' %> &middot;
+                    <%= new Date(c.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) %>
+                  </p>
+                </div>
+              </div>
+            <% }); %>
+          <% } %>
+        </div>
+
+        <!-- Add comment form -->
+        <% if (canComment) { %>
+          <form action="/transactions/<%= tx._id %>/comment" method="POST" class="border-t border-white/5 pt-5">
+            <div class="flex gap-3">
+              <input type="text" name="comment" required maxlength="500"
+                placeholder="Type a message..."
+                class="flex-1 bg-slate-900/50 border border-slate-800 rounded-xl px-4 py-3 text-white text-sm placeholder-slate-600 focus:outline-none focus:border-cyan-500 transition-colors">
+              <button type="submit"
+                class="px-5 py-3 rounded-xl bg-cyan-500 text-slate-950 font-bold font-cyber text-xs uppercase tracking-wider hover:bg-cyan-400 transition-all shadow-lg shadow-cyan-500/20">
+                Send
+              </button>
+            </div>
+          </form>
+        <% } else { %>
+          <div class="border-t border-white/5 pt-5 text-center text-xs text-slate-600 font-cyber uppercase tracking-widest">
+            This transaction is closed. No further messages can be added.
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Auto-scroll comment list to bottom on load
+  document.addEventListener('DOMContentLoaded', () => {
+    const list = document.getElementById('comment-list');
+    if (list) list.scrollTop = list.scrollHeight;
+  });
+</script>
+
+<%- include('partials/footer') %>

@@ -8,6 +8,7 @@ const rateLimit = require('express-rate-limit');
 const connectDB = require('./config/database');
 const mainRoutes = require('./routes/index');
 const errorHandler = require('./middleware/errorHandler');
+const NotificationService = require('./services/notificationService');
 
 // Load env vars early
 require('dotenv').config();
@@ -19,12 +20,14 @@ const app = express();
 app.set('trust proxy', 1);
 
 // Security & Performance Middleware
+// Note: 'unsafe-inline' is removed from scriptSrc/scriptSrcAttr.
+// All JS lives in /public/js/ static files.
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'"],
-      scriptSrcAttr: ["'self'", "'unsafe-inline'"],
+      scriptSrc: ["'self'"],
+      scriptSrcAttr: ["'none'"],
       styleSrc: ["'self'", "https://fonts.googleapis.com", "'unsafe-inline'"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
       imgSrc: ["'self'", "data:", "https:"],
@@ -36,13 +39,24 @@ app.use(compression());
 
 // Rate Limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  max: 200,
   standardHeaders: true,
   legacyHeaders: false,
   message: 'Too many requests from this IP, please try again after 15 minutes'
 });
 app.use(limiter);
+
+// Stricter rate limit for auth endpoints
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: 'Too many login attempts, please try again later'
+});
+app.use('/login', authLimiter);
+app.use('/register', authLimiter);
 
 // EJS Setup
 app.set('views', path.join(__dirname, '../views'));
@@ -72,7 +86,7 @@ app.use(
       ttl: 14 * 24 * 60 * 60 // 14 days
     }),
     cookie: {
-      secure: 'auto',
+      secure: process.env.NODE_ENV === 'production',
       httpOnly: true,
       sameSite: 'lax',
       maxAge: 1000 * 60 * 60 * 24 * 14 // 14 days
@@ -80,9 +94,10 @@ app.use(
   })
 );
 
-// Shared auth state for all EJS views (layout/header and pages)
-app.use((req, res, next) => {
+// Shared auth state + unread notification count for all EJS views
+app.use(async (req, res, next) => {
   res.locals.currentPath = req.path;
+  res.locals.query = req.query;
   res.locals.isAuthenticated = Boolean(req.session && req.session.userId);
   res.locals.currentUser = req.session && req.session.userId
     ? {
@@ -90,6 +105,13 @@ app.use((req, res, next) => {
         name: req.session.userName || ''
       }
     : null;
+
+  // Unread notification badge count
+  res.locals.unreadCount = 0;
+  if (res.locals.isAuthenticated) {
+    res.locals.unreadCount = await NotificationService.countUnread(req.session.userId);
+  }
+
   res.locals.navItems = res.locals.isAuthenticated
     ? [
         { label: 'Feed', href: '/' },
@@ -98,6 +120,7 @@ app.use((req, res, next) => {
     : [
         { label: 'Feed', href: '/' }
       ];
+
   res.locals.authActions = res.locals.isAuthenticated
     ? [
         { label: 'Logout', href: '/logout', variant: 'danger' }
@@ -106,13 +129,23 @@ app.use((req, res, next) => {
         { label: 'Access', href: '/login', variant: 'primary' },
         { label: 'Join Hub', href: '/register', variant: 'primary' }
       ];
+
   next();
 });
 
 // Routes
 app.use('/', mainRoutes);
 
-// Error Handler (must be after routes)
+// 404 handler — must be after all routes
+app.use((req, res) => {
+  res.status(404).render('error', {
+    title: 'Not Found',
+    statusCode: 404,
+    message: 'The page or resource you were looking for does not exist.'
+  });
+});
+
+// Centralized error handler (must be last)
 app.use(errorHandler);
 
 // Export app

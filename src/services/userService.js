@@ -1,23 +1,23 @@
 const User = require('../models/userModel');
+const Listing = require('../models/listingModel');
+const Transaction = require('../models/transactionModel');
 const bcrypt = require('bcryptjs');
 
 const UserService = {
     async registerUser(userData) {
-        // Business logic for registration
-        const existingUser = await User.findOne({ email: userData.email });
+        const existingUser = await User.findOne({ email: userData.email.toLowerCase() });
         if (existingUser) {
-            throw new Error('User already exists');
+            throw new Error('An account with this email already exists');
         }
         return await User.create(userData);
     },
 
     async loginUser(email, password) {
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email: email.toLowerCase() });
         if (!user) {
             throw new Error('Invalid email or password');
         }
 
-        // Compare passwords
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             throw new Error('Invalid email or password');
@@ -27,12 +27,32 @@ const UserService = {
     },
 
     async getUserById(userId) {
-        return await User.findById(userId);
+        return await User.findById(userId).lean();
     },
 
-    async getUserProfile() {
-        // Get the first user for the current simple dashboard
-        return await User.find().sort({ createdAt: -1 }).limit(1);
+    async getDashboardData(userId) {
+        const [myListings, offersReceived, offersSent] = await Promise.all([
+            // All listings posted by this user
+            Listing.find({ user: userId })
+                .sort({ createdAt: -1 })
+                .lean(),
+
+            // Transactions where this user is the seller and someone bargained with them
+            Transaction.find({ seller: userId })
+                .populate('listing', 'title type status')
+                .populate('buyer', 'name dorm')
+                .sort({ updatedAt: -1 })
+                .lean(),
+
+            // Transactions this user initiated as a buyer
+            Transaction.find({ buyer: userId })
+                .populate('listing', 'title type status')
+                .populate('seller', 'name dorm')
+                .sort({ updatedAt: -1 })
+                .lean(),
+        ]);
+
+        return { myListings, offersReceived, offersSent };
     }
 };
 
