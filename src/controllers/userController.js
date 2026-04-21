@@ -1,5 +1,14 @@
 const UserService = require('../services/userService');
 
+async function renderProfileView(req, res, title) {
+    if (!req.session.userId) {
+        return res.redirect('/login');
+    }
+
+    const user = await UserService.getUserById(req.session.userId);
+    res.render('dashboard', { title, user, session: req.session });
+}
+
 const UserController = {
     renderRegister(req, res) {
         res.render('register', { title: 'Register', session: req.session });
@@ -52,13 +61,18 @@ const UserController = {
 
     async renderDashboard(req, res) {
         try {
-            if (!req.session.userId) {
-                return res.redirect('/login');
-            }
-            const user = await UserService.getUserById(req.session.userId);
-            res.render('dashboard', { title: 'My Dashboard', user, session: req.session });
+            await renderProfileView(req, res, 'My Dashboard');
         } catch (error) {
             console.error('Dashboard render error:', error);
+            res.status(500).send('Internal Server Error');
+        }
+    },
+
+    async renderProfile(req, res) {
+        try {
+            await renderProfileView(req, res, 'My Profile');
+        } catch (error) {
+            console.error('Profile render error:', error);
             res.status(500).send('Internal Server Error');
         }
     },

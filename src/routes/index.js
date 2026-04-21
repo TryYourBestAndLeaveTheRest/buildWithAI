@@ -19,6 +19,7 @@ router.post('/login', redirectIfAuthenticated, validateLogin, UserController.han
 
 // User dashboard & logout
 router.get('/dashboard', requireAuth, UserController.renderDashboard);
+router.get('/profile', requireAuth, UserController.renderProfile);
 router.get('/logout', requireAuth, UserController.logout);
 
 module.exports = router;

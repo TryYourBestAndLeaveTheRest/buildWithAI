@@ -82,6 +82,7 @@ app.use(
 
 // Shared auth state for all EJS views (layout/header and pages)
 app.use((req, res, next) => {
+  res.locals.currentPath = req.path;
   res.locals.isAuthenticated = Boolean(req.session && req.session.userId);
   res.locals.currentUser = req.session && req.session.userId
     ? {
@@ -89,6 +90,22 @@ app.use((req, res, next) => {
         name: req.session.userName || ''
       }
     : null;
+  res.locals.navItems = res.locals.isAuthenticated
+    ? [
+        { label: 'Feed', href: '/' },
+        { label: 'Dashboard', href: '/dashboard' }
+      ]
+    : [
+        { label: 'Feed', href: '/' }
+      ];
+  res.locals.authActions = res.locals.isAuthenticated
+    ? [
+        { label: 'Logout', href: '/logout', variant: 'danger' }
+      ]
+    : [
+        { label: 'Access', href: '/login', variant: 'primary' },
+        { label: 'Join Hub', href: '/register', variant: 'primary' }
+      ];
   next();
 });
 

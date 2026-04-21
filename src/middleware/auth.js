@@ -1,4 +1,9 @@
 const requireAuth = (req, res, next) => {
+  const isPublicHomeRequest = req.method === 'GET' && req.path === '/';
+  if (isPublicHomeRequest) {
+    return next();
+  }
+
   if (req.session && req.session.userId) {
     return next();
   }
