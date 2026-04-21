@@ -8,7 +8,8 @@
     "dev": "node --watch server.js",
     "build:css": "tailwindcss -i ./src/styles/input.css -o ./public/css/styles.css",
     "watch:css": "tailwindcss -i ./src/styles/input.css -o ./public/css/styles.css --watch",
-    "watch": "npm run watch:css & npm run dev"
+    "dbrep":"mongod --replSet rs0 --dbpath ~/data/db -port 27017 --fork --logpath ~/data/db.log && mongo --eval 'rs.initiate()'",
+    "watch": "npm run dbrep & npm run dev"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
