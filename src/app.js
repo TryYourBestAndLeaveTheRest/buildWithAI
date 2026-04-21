@@ -1,6 +1,6 @@
 const express = require('express');
 const session = require('express-session');
-const MongoStore = require('connect-mongo');
+const { MongoStore } = require('connect-mongo');
 const path = require('path');
 const helmet = require('helmet');
 const compression = require('compression');
@@ -54,7 +54,7 @@ app.use(
     secret: sessionSecret || 'dev_secret_only',
     resave: false,
     saveUninitialized: false,
-    store: MongoStore.create({ 
+    store: MongoStore.create({
       mongoUrl: process.env.MONGO_URI,
       ttl: 14 * 24 * 60 * 60 // 14 days
     }),
