@@ -16,6 +16,21 @@ const validateListing = [
   }
 ];
 
+const validateInteraction = [
+  body('action').isIn(['buy', 'provide']).withMessage('Invalid interaction action'),
+  body('comment').optional({ values: 'falsy' }).trim().isLength({ max: 300 }).withMessage('Comment must be 300 characters or less'),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        error: errors.array()[0].msg
+      });
+    }
+    next();
+  }
+];
+
 const validateRegistration = [
   body('email').isEmail().withMessage('Please enter a valid email'),
   body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
@@ -50,5 +65,6 @@ const validateLogin = [
 module.exports = {
   validateListing,
   validateRegistration,
-  validateLogin
+  validateLogin,
+  validateInteraction
 };

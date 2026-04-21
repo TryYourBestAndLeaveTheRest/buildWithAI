@@ -16,11 +16,28 @@ const ListingSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
+    required: true
+  },
+  dorm: {
+    type: String,
+    required: true,
+    trim: true
   },
   type: {
     type: String,
     enum: ['have', 'need'],
     required: true,
+  },
+  status: {
+    type: String,
+    enum: ['active', 'bargaining', 'agreed', 'completed', 'canceled', 'disputed'],
+    default: 'active',
+    index: true
+  },
+  activeBargainer: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null
   },
   createdAt: {
     type: Date,
@@ -30,13 +47,12 @@ const ListingSchema = new mongoose.Schema({
 
 const Listing = mongoose.model('Listing', ListingSchema);
 Listing.getByType = async function (type) {
-  if (type === 'have') {
-    return this.find({}).sort({ createdAt: -1 }).limit(10);
-  }
-  if (type === 'need') {
-    return this.find({}).sort({ createdAt: -1 }).limit(10);
-  }
-  return this.find({}).sort({ createdAt: -1 }).limit(10);
+  const query = type ? { type } : {};
+  return this.find(query)
+    .populate('user', 'name')
+    .populate('activeBargainer', 'name')
+    .sort({ createdAt: -1 })
+    .limit(10);
 }
 
 Listing.create = async function (listingData) {

@@ -2,12 +2,13 @@ const express = require('express');
 const router = express.Router();
 const ListingController = require('../controllers/listingController');
 const UserController = require('../controllers/userController');
-const { validateListing, validateRegistration, validateLogin } = require('../middleware/validator');
+const { validateListing, validateRegistration, validateLogin, validateInteraction } = require('../middleware/validator');
 const { requireAuth, redirectIfAuthenticated } = require('../middleware/auth');
 
 // Home & Listings
 router.get('/', requireAuth, ListingController.renderHome);
 router.post('/items/new', requireAuth, validateListing, ListingController.createListing);
+router.post('/items/:id/interact', requireAuth, validateInteraction, ListingController.interactWithListing);
 
 // User registration
 router.get('/register', redirectIfAuthenticated, UserController.renderRegister);

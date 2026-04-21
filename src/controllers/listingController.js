@@ -27,6 +27,19 @@ const ListingController = {
             console.error('Create listing error:', error);
             res.status(500).send('Error creating listing');
         }
+    },
+
+    async interactWithListing(req, res) {
+        try {
+            const { id } = req.params;
+            const { action, comment } = req.body;
+
+            await ListingService.startBargaining(id, req.session.userId, action, comment || '');
+            res.redirect('/');
+        } catch (error) {
+            console.error('Listing interaction error:', error);
+            res.status(400).send(error.message || 'Unable to start bargaining');
+        }
     }
 };
 
