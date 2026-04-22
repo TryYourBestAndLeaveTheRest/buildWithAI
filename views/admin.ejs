@@ -40,15 +40,6 @@
         </div>
       </div>
 
-      <!-- Total Feedback -->
-      <div class="metric-card">
-        <div class="metric-icon">💬</div>
-        <div class="metric-content">
-          <div class="metric-label">Total Feedback Interactions</div>
-          <div class="metric-value"><%= metrics.feedback.totalFeedback.toLocaleString() %></div>
-          <div class="metric-subtext">Conversion: <%= metrics.feedback.conversionRate %>%</div>
-        </div>
-      </div>
     </div>
 
     <!-- Feedback Analytics Section -->
@@ -58,65 +49,7 @@
       </div>
 
       <div class="analytics-grid">
-        <!-- Feedback by Source -->
-        <div class="analytics-card">
-          <h3>Feedback by Source</h3>
-          <div class="chart-container">
-            <% if (metrics.feedback.feedbackBySource && metrics.feedback.feedbackBySource.length > 0) { %>
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th>Source</th>
-                    <th>Count</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% metrics.feedback.feedbackBySource.forEach(item => { %>
-                    <tr>
-                      <td>
-                        <% 
-                          const sourceLabels = {
-                            'exit-intent': '🚪 Exit Intent',
-                            'timed-trigger': '⏲️ Timed Trigger',
-                            'floating-button': '💬 Floating Button',
-                            'direct': '🔗 Direct'
-                          };
-                        %>
-                        <%= sourceLabels[item._id] || item._id %>
-                      </td>
-                      <td class="text-right"><strong><%= item.count %></strong></td>
-                    </tr>
-                  <% }); %>
-                </tbody>
-              </table>
-            <% } else { %>
-              <p class="empty-state">No feedback data yet</p>
-            <% } %>
-          </div>
-        </div>
 
-        <!-- Feedback Actions -->
-        <div class="analytics-card">
-          <h3>User Actions</h3>
-          <div class="chart-container">
-            <div class="action-summary">
-              <div class="action-item">
-                <span class="action-label">✅ Redirected to Form</span>
-                <span class="action-count"><%= metrics.feedback.conversions %></span>
-              </div>
-              <div class="progress-bar">
-                <div class="progress-fill" data-width="<%= (metrics.feedback.totalFeedback > 0 ? (metrics.feedback.conversions / metrics.feedback.totalFeedback * 100) : 0).toFixed(2) %>"></div>
-              </div>
-              <div class="action-item">
-                <span class="action-label">❌ Dismissed</span>
-                <span class="action-count"><%= metrics.feedback.dismissals %></span>
-              </div>
-              <div class="progress-bar">
-                <div class="progress-fill" data-width="<%= (metrics.feedback.totalFeedback > 0 ? (metrics.feedback.dismissals / metrics.feedback.totalFeedback * 100) : 0).toFixed(2) %>"></div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
 

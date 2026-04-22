@@ -1,70 +1,6 @@
-const Feedback = require('../models/feedbackModel');
 const { PageView, SessionAnalytics } = require('../models/analyticsModel');
 
 class FeedbackService {
-  /**
-   * Log feedback action
-   */
-  async logFeedback(data) {
-    try {
-      const feedback = new Feedback({
-        userId: data.userId || null,
-        sessionId: data.sessionId,
-        source: data.source || 'floating-button',
-        action: data.action,
-        pageUrl: data.pageUrl || '',
-        userAgent: data.userAgent || '',
-      });
-      await feedback.save();
-      return feedback;
-    } catch (error) {
-      console.error('[FeedbackService] Error logging feedback:', error.message);
-      throw error;
-    }
-  }
-
-  /**
-   * Get feedback analytics
-   */
-  async getFeedbackAnalytics() {
-    try {
-      const totalFeedback = await Feedback.countDocuments();
-      
-      const feedbackBySource = await Feedback.aggregate([
-        {
-          $group: {
-            _id: '$source',
-            count: { $sum: 1 },
-          },
-        },
-      ]);
-
-      const feedbackByAction = await Feedback.aggregate([
-        {
-          $group: {
-            _id: '$action',
-            count: { $sum: 1 },
-          },
-        },
-      ]);
-
-      const conversions = await Feedback.countDocuments({ action: 'redirected-to-form' });
-      const dismissals = await Feedback.countDocuments({ action: 'dismissed' });
-      const conversionRate = totalFeedback > 0 ? ((conversions / totalFeedback) * 100).toFixed(2) : 0;
-
-      return {
-        totalFeedback,
-        feedbackBySource,
-        feedbackByAction,
-        conversions,
-        dismissals,
-        conversionRate,
-      };
-    } catch (error) {
-      console.error('[FeedbackService] Error getting analytics:', error.message);
-      throw error;
-    }
-  }
 
   /**
    * Get session analytics
@@ -155,12 +91,10 @@ class FeedbackService {
    */
   async getDashboardMetrics() {
     try {
-      const feedbackAnalytics = await this.getFeedbackAnalytics();
       const sessionAnalytics = await this.getSessionAnalytics();
       const pageViewAnalytics = await this.getPageViewAnalytics();
 
       return {
-        feedback: feedbackAnalytics,
         sessions: sessionAnalytics,
         pageViews: pageViewAnalytics,
       };

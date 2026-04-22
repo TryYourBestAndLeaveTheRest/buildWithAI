@@ -25,8 +25,9 @@ const requireAdmin = (req, res, next) => {
     userId: req.session?.userId,
   });
   return res.status(403).render('error', {
-    message: 'Access Denied',
-    error: { status: 403, message: 'You do not have permission to access this resource.' }
+    title: 'Access Denied',
+    statusCode: 403,
+    message: 'You do not have permission to access this resource.',
   });
 };
 

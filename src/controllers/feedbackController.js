@@ -1,32 +1,6 @@
 const FeedbackService = require('../services/feedbackService');
 
 class FeedbackController {
-  /**
-   * Log feedback action (AJAX endpoint)
-   */
-  async logFeedback(req, res) {
-    try {
-      const { source, action } = req.body;
-      
-      if (!action || !['redirected-to-form', 'dismissed'].includes(action)) {
-        return res.status(400).json({ error: 'Invalid action' });
-      }
-
-      const feedback = await FeedbackService.logFeedback({
-        userId: req.session?.userId || null,
-        sessionId: req.sessionID,
-        source: source || 'floating-button',
-        action,
-        pageUrl: req.headers.referer || '',
-        userAgent: req.get('user-agent') || '',
-      });
-
-      res.json({ success: true, feedback });
-    } catch (error) {
-      console.error('[FeedbackController] Error logging feedback:', error.message);
-      res.status(500).json({ error: 'Failed to log feedback' });
-    }
-  }
 
   /**
    * Render admin dashboard
@@ -42,8 +16,9 @@ class FeedbackController {
     } catch (error) {
       console.error('[FeedbackController] Error rendering admin dashboard:', error.message);
       res.status(500).render('error', {
-        message: 'Failed to load dashboard',
-        error: { status: 500, message: error.message },
+        title: 'Error',
+        statusCode: 500,
+        message: error.message || 'Failed to load dashboard',
       });
     }
   }

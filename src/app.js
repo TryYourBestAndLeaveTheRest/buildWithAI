@@ -8,7 +8,6 @@ const rateLimit = require('express-rate-limit');
 const connectDB = require('./config/database');
 const mainRoutes = require('./routes/index');
 const adminRoutes = require('./routes/admin');
-const feedbackRoutes = require('./routes/feedback');
 const errorHandler = require('./middleware/errorHandler');
 const { analyticsMiddleware } = require('./middleware/analytics');
 const NotificationService = require('./services/notificationService');
@@ -104,7 +103,7 @@ app.use(analyticsMiddleware);
 app.use(async (req, res, next) => {
   res.locals.currentPath = req.path;
   res.locals.query = req.query;
-  res.locals.feedbackFormUrl = process.env.FEEDBACK_FORM_URL || 'https://forms.google.com/YOUR-FORM-ID';
+  res.locals.feedbackFormUrl = process.env.FEEDBACK_FORM_URL;
   res.locals.isAuthenticated = Boolean(req.session && req.session.userId);
   res.locals.isAdmin = req.session?.isAdmin || false;
   res.locals.currentUser = req.session && req.session.userId
@@ -145,7 +144,6 @@ app.use(async (req, res, next) => {
 // Routes
 app.use('/', mainRoutes);
 app.use('/', adminRoutes);
-app.use('/', feedbackRoutes);
 
 // 404 handler — must be after all routes
 app.use((req, res) => {
