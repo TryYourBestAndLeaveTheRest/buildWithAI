@@ -13,6 +13,24 @@ const requireAuth = (req, res, next) => {
 };
 
 /**
+ * requireAdmin — requires admin privileges (isAdmin = true).
+ */
+const requireAdmin = (req, res, next) => {
+  if (req.session && req.session.userId && req.session.isAdmin === true) {
+    return next();
+  }
+  console.warn('[Auth] Unauthorized admin access attempt', {
+    path: req.originalUrl,
+    sessionId: req.sessionID,
+    userId: req.session?.userId,
+  });
+  return res.status(403).render('error', {
+    message: 'Access Denied',
+    error: { status: 403, message: 'You do not have permission to access this resource.' }
+  });
+};
+
+/**
  * optionalAuth — always proceeds. Sets session info in res.locals if logged in.
  * Use for routes that are public but adapt their UI for authenticated users.
  */
@@ -33,6 +51,7 @@ const redirectIfAuthenticated = (req, res, next) => {
 
 module.exports = {
   requireAuth,
+  requireAdmin,
   optionalAuth,
   redirectIfAuthenticated
 };

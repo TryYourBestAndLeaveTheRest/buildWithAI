@@ -1,5 +1,9 @@
     </main>
 
+    <!-- Feedback Modal & Button (on all pages) -->
+    <%- include('feedback-modal') %>
+    <%- include('feedback-button') %>
+
     <!-- Footer -->
     <footer class="border-t border-slate-800 bg-slate-950/80 py-8">
         <div class="container mx-auto px-4 text-center">
@@ -13,6 +17,13 @@
         </div>
     </footer>
 
+    <script>
+      // Configure feedback form URL (update this with your actual Google Form URL)
+      window.FEEDBACK_CONFIG = {
+                formUrl: '<%= feedbackFormUrl %>'
+      };
+    </script>
     <script src="/js/app.js"></script>
+    <script src="/js/feedback.js"></script>
 </body>
 </html>

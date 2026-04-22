@@ -7,7 +7,10 @@ const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 const connectDB = require('./config/database');
 const mainRoutes = require('./routes/index');
+const adminRoutes = require('./routes/admin');
+const feedbackRoutes = require('./routes/feedback');
 const errorHandler = require('./middleware/errorHandler');
+const { analyticsMiddleware } = require('./middleware/analytics');
 const NotificationService = require('./services/notificationService');
 
 // Load env vars early
@@ -94,15 +97,21 @@ app.use(
   })
 );
 
+// Analytics middleware - track page views and session data
+app.use(analyticsMiddleware);
+
 // Shared auth state + unread notification count for all EJS views
 app.use(async (req, res, next) => {
   res.locals.currentPath = req.path;
   res.locals.query = req.query;
+  res.locals.feedbackFormUrl = process.env.FEEDBACK_FORM_URL || 'https://forms.google.com/YOUR-FORM-ID';
   res.locals.isAuthenticated = Boolean(req.session && req.session.userId);
+  res.locals.isAdmin = req.session?.isAdmin || false;
   res.locals.currentUser = req.session && req.session.userId
     ? {
         id: req.session.userId,
-        name: req.session.userName || ''
+        name: req.session.userName || '',
+        isAdmin: req.session.isAdmin || false
       }
     : null;
 
@@ -135,6 +144,8 @@ app.use(async (req, res, next) => {
 
 // Routes
 app.use('/', mainRoutes);
+app.use('/', adminRoutes);
+app.use('/', feedbackRoutes);
 
 // 404 handler — must be after all routes
 app.use((req, res) => {

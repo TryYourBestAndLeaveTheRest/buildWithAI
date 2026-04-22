@@ -40,6 +40,7 @@ const UserController = {
             const user = await UserService.loginUser(email, password);
             req.session.userId = user._id;
             req.session.userName = user.name;
+            req.session.isAdmin = user.isAdmin || false;
             req.session.save(() => res.redirect('/dashboard'));
         } catch (error) {
             console.error('Login error:', error);

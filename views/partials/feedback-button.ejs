@@ -1,0 +1,77 @@
+<!-- Floating Feedback Button -->
+<button id="floatingFeedbackBtn" class="floating-feedback-btn" title="Share your feedback" aria-label="Share your feedback">
+  <span class="feedback-icon">FB</span>
+</button>
+
+<style>
+  .floating-feedback-btn {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: white;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0, 123, 255, 0.4);
+    font-size: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 9998;
+  }
+
+  .floating-feedback-btn:hover {
+    transform: scale(1.1) translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 123, 255, 0.5);
+  }
+
+  .floating-feedback-btn:active {
+    transform: scale(0.95);
+  }
+
+  .feedback-icon {
+    display: inline-block;
+    animation: feedbackBounce 2s infinite;
+  }
+
+  @media (max-width: 768px) {
+    .floating-feedback-btn {
+      bottom: 16px;
+      right: 16px;
+      width: 56px;
+      height: 56px;
+      font-size: 24px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .floating-feedback-btn {
+      bottom: 12px;
+      right: 12px;
+      width: 52px;
+      height: 52px;
+      font-size: 22px;
+    }
+  }
+
+  @keyframes feedbackBounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+
+  /* Reduce animation on reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    .floating-feedback-btn,
+    .feedback-icon {
+      animation: none !important;
+    }
+  }
+</style>

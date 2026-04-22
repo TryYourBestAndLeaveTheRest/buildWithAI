@@ -1,0 +1,188 @@
+<!-- Feedback Modal -->
+<div id="feedbackModal" class="feedback-modal">
+  <div class="feedback-modal-overlay"></div>
+  <div class="feedback-modal-content">
+    <button class="feedback-modal-close" aria-label="Close feedback modal">&times;</button>
+    <div class="feedback-modal-header">
+      <h2>Share Your Feedback</h2>
+      <p>Would you like to share feedback to help us improve this app?</p>
+    </div>
+    <div class="feedback-modal-buttons">
+      <button id="feedbackYesBtn" class="feedback-btn feedback-btn-primary">
+        Give Feedback
+      </button>
+      <button id="feedbackNoBtn" class="feedback-btn feedback-btn-secondary">
+        No, Thanks
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .feedback-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9999;
+    animation: feedbackFadeIn 0.3s ease-in-out;
+  }
+
+  .feedback-modal.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .feedback-modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    animation: feedbackOverlayFadeIn 0.3s ease-in-out;
+  }
+
+  .feedback-modal-content {
+    position: relative;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    padding: 32px;
+    max-width: 500px;
+    width: 90%;
+    animation: feedbackSlideUp 0.4s ease-out;
+  }
+
+  .feedback-modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+  }
+
+  .feedback-modal-close:hover {
+    color: #000;
+  }
+
+  .feedback-modal-header {
+    margin-bottom: 24px;
+    text-align: center;
+  }
+
+  .feedback-modal-header h2 {
+    margin: 0 0 12px 0;
+    font-size: 24px;
+    color: #333;
+    font-weight: 600;
+  }
+
+  .feedback-modal-header p {
+    margin: 0;
+    color: #666;
+    font-size: 16px;
+    line-height: 1.4;
+  }
+
+  .feedback-modal-buttons {
+    display: flex;
+    gap: 12px;
+    flex-direction: column;
+  }
+
+  .feedback-btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+  }
+
+  .feedback-btn-primary {
+    background-color: #007bff;
+    color: white;
+  }
+
+  .feedback-btn-primary:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+  }
+
+  .feedback-btn-secondary {
+    background-color: #e9ecef;
+    color: #333;
+  }
+
+  .feedback-btn-secondary:hover {
+    background-color: #dee2e6;
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 600px) {
+    .feedback-modal-content {
+      padding: 24px;
+      border-radius: 16px;
+      width: 95%;
+    }
+
+    .feedback-modal-header h2 {
+      font-size: 20px;
+    }
+
+    .feedback-modal-header p {
+      font-size: 14px;
+    }
+
+    .feedback-btn {
+      padding: 14px 20px;
+      font-size: 14px;
+    }
+  }
+
+  @keyframes feedbackFadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes feedbackOverlayFadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes feedbackSlideUp {
+    from {
+      transform: translateY(30px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+</style>
