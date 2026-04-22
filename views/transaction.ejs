@@ -78,6 +78,10 @@
                 <% } %>
               </p>
               <p class="text-slate-500 text-[10px] font-cyber uppercase">Buyer &middot; <%= tx.buyer.dorm || '—' %></p>
+              <% if (tx.buyer.phone) { %>
+                <p class="text-slate-500 text-[10px] font-cyber uppercase mt-1">Phone &middot; <%= tx.buyer.phone %></p>
+                <a href="tel:<%= tx.buyer.phone.replace(/[^+\d]/g, '') %>" class="inline-flex items-center mt-2 px-3 py-1.5 rounded-lg border border-cyan-500/40 text-cyan-400 text-[10px] font-cyber uppercase tracking-wider hover:bg-cyan-500/10 transition-colors">Call Buyer</a>
+              <% } %>
             </div>
           </div>
           <div class="border-t border-white/5 pt-3 flex items-center gap-3">
@@ -92,6 +96,10 @@
                 <% } %>
               </p>
               <p class="text-slate-500 text-[10px] font-cyber uppercase">Seller &middot; <%= tx.seller.dorm || '—' %></p>
+              <% if (tx.seller.phone) { %>
+                <p class="text-slate-500 text-[10px] font-cyber uppercase mt-1">Phone &middot; <%= tx.seller.phone %></p>
+                <a href="tel:<%= tx.seller.phone.replace(/[^+\d]/g, '') %>" class="inline-flex items-center mt-2 px-3 py-1.5 rounded-lg border border-cyan-500/40 text-cyan-400 text-[10px] font-cyber uppercase tracking-wider hover:bg-cyan-500/10 transition-colors">Call Seller</a>
+              <% } %>
             </div>
           </div>
         </div>

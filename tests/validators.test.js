@@ -15,7 +15,7 @@ describe('Validator Middleware', () => {
       const res = await request(app)
         .post('/register')
         .type('form')
-        .send({ name: 'Test User', email: 'notanemail', password: 'password123', dorm: 'North Hall' });
+        .send({ name: 'Test User', email: 'notanemail', password: 'password123', phone: '+2348012345678', dorm: 'North Hall' });
       expect(res.status).toBe(400);
     });
 
@@ -23,7 +23,7 @@ describe('Validator Middleware', () => {
       const res = await request(app)
         .post('/register')
         .type('form')
-        .send({ name: 'Test User', email: 'test@campus.edu', password: '123', dorm: 'North Hall' });
+        .send({ name: 'Test User', email: 'test@campus.edu', password: '123', phone: '+2348012345678', dorm: 'North Hall' });
       expect(res.status).toBe(400);
     });
 
@@ -31,7 +31,15 @@ describe('Validator Middleware', () => {
       const res = await request(app)
         .post('/register')
         .type('form')
-        .send({ name: 'X', email: 'test@campus.edu', password: 'password123', dorm: 'North Hall' });
+        .send({ name: 'X', email: 'test@campus.edu', password: 'password123', phone: '+2348012345678', dorm: 'North Hall' });
+      expect(res.status).toBe(400);
+    });
+
+    it('should return 400 for invalid phone format', async () => {
+      const res = await request(app)
+        .post('/register')
+        .type('form')
+        .send({ name: 'Test User', email: 'test@campus.edu', password: 'password123', phone: 'abc', dorm: 'North Hall' });
       expect(res.status).toBe(400);
     });
   });

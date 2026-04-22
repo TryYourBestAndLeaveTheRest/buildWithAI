@@ -1,4 +1,5 @@
 const { body, validationResult } = require('express-validator');
+const { DORM_OPTIONS } = require('../config/registerOptions');
 
 // Helper to build the validation error middleware for a given view
 function makeErrorRenderer(view, extraLocals = {}) {
@@ -44,7 +45,11 @@ const validateRegistration = [
   body('email').isEmail().normalizeEmail().withMessage('Please enter a valid email'),
   body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
   body('name').trim().isLength({ min: 2 }).withMessage('Name must be at least 2 characters'),
-  makeErrorRenderer('register')
+  body('phone')
+    .trim()
+    .matches(/^\+?[0-9][0-9\s\-()]{7,18}$/)
+    .withMessage('Please enter a valid phone number'),
+  makeErrorRenderer('register', { dormOptions: DORM_OPTIONS })
 ];
 
 const validateLogin = [

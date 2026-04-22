@@ -1,8 +1,15 @@
 const UserService = require('../services/userService');
+const { DORM_OPTIONS } = require('../config/registerOptions');
 
 const UserController = {
     renderRegister(req, res) {
-        res.render('register', { title: 'Register', session: req.session, error: null });
+        res.render('register', {
+            title: 'Register',
+            session: req.session,
+            error: null,
+            dormOptions: DORM_OPTIONS,
+            formData: {}
+        });
     },
 
     async handleRegister(req, res, next) {
@@ -17,7 +24,8 @@ const UserController = {
                 title: 'Register',
                 error: error.message,
                 formData: req.body,
-                session: req.session
+                session: req.session,
+                dormOptions: DORM_OPTIONS
             });
         }
     },

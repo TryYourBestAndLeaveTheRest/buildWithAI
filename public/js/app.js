@@ -104,4 +104,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 4000);
   }
 
+  // --------------------------------------------------
+  // 5. Password visibility toggles
+  // --------------------------------------------------
+  document.querySelectorAll('[data-password-toggle]').forEach((toggleButton) => {
+    const targetId = toggleButton.getAttribute('data-password-toggle');
+    const passwordInput = document.getElementById(targetId);
+
+    if (!passwordInput) return;
+
+    toggleButton.addEventListener('click', () => {
+      const isHidden = passwordInput.type === 'password';
+      passwordInput.type = isHidden ? 'text' : 'password';
+      toggleButton.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+      toggleButton.setAttribute('aria-pressed', String(isHidden));
+
+      const showIcon = toggleButton.querySelector('[data-icon="show"]');
+      const hideIcon = toggleButton.querySelector('[data-icon="hide"]');
+
+      showIcon && showIcon.classList.toggle('hidden', !isHidden);
+      hideIcon && hideIcon.classList.toggle('hidden', isHidden);
+    });
+  });
+
 });

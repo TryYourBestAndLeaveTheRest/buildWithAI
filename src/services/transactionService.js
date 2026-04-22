@@ -7,8 +7,8 @@ const TransactionService = {
     async getById(transactionId, userId) {
         const tx = await Transaction.findById(transactionId)
             .populate('listing', 'title type status dorm price')
-            .populate('buyer', 'name dorm')
-            .populate('seller', 'name dorm')
+            .populate('buyer', 'name dorm phone')
+            .populate('seller', 'name dorm phone')
             .populate('comments.author', 'name')
             .lean();
 

@@ -40,14 +40,14 @@ const UserService = {
             // Transactions where this user is the seller and someone bargained with them
             Transaction.find({ seller: userId })
                 .populate('listing', 'title type status')
-                .populate('buyer', 'name dorm')
+                .populate('buyer', 'name dorm phone')
                 .sort({ updatedAt: -1 })
                 .lean(),
 
             // Transactions this user initiated as a buyer
             Transaction.find({ buyer: userId })
                 .populate('listing', 'title type status')
-                .populate('seller', 'name dorm')
+                .populate('seller', 'name dorm phone')
                 .sort({ updatedAt: -1 })
                 .lean(),
         ]);
