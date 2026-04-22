@@ -74,7 +74,6 @@ PageViewSchema.index({ sessionId: 1, viewedAt: -1 });
 PageViewSchema.index({ userId: 1, viewedAt: -1 });
 PageViewSchema.index({ viewedAt: -1 });
 
-SessionAnalyticsSchema.index({ sessionId: 1 });
 SessionAnalyticsSchema.index({ userId: 1 });
 SessionAnalyticsSchema.index({ startTime: -1 });
 

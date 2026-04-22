@@ -1,14 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const FeedbackController = require('../controllers/feedbackController');
+const AdminController = require('../controllers/adminController');
 const { requireAdmin } = require('../middleware/auth');
 
 // Admin Dashboard (protected by requireAdmin)
-router.get('/admin', requireAdmin, FeedbackController.renderAdminDashboard);
+router.get('/admin', requireAdmin, AdminController.renderDashboard);
 
 // API endpoints for dashboard data
-router.get('/api/admin/feedback-data', requireAdmin, FeedbackController.getFeedbackData);
-router.get('/api/admin/session-data', requireAdmin, FeedbackController.getSessionData);
-router.get('/api/admin/pageview-data', requireAdmin, FeedbackController.getPageViewData);
+router.get('/api/admin/session-data', requireAdmin, AdminController.getSessionData);
+router.get('/api/admin/pageview-data', requireAdmin, AdminController.getPageViewData);
 
 module.exports = router;
