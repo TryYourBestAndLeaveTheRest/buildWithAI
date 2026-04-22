@@ -9,5 +9,6 @@ router.get('/admin', requireAdmin, AdminController.renderDashboard);
 // API endpoints for dashboard data
 router.get('/api/admin/session-data', requireAdmin, AdminController.getSessionData);
 router.get('/api/admin/pageview-data', requireAdmin, AdminController.getPageViewData);
+router.get('/api/admin/data/:resource', requireAdmin, AdminController.getDataList);
 
 module.exports = router;

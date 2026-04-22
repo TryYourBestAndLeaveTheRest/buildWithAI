@@ -1,4 +1,7 @@
 const { PageView, SessionAnalytics } = require('../models/analyticsModel');
+const User = require('../models/userModel');
+const Transaction = require('../models/transactionModel');
+const Listing = require('../models/listingModel');
 
 class AdminAnalyticsService {
   async getSessionAnalytics() {
@@ -68,15 +71,71 @@ class AdminAnalyticsService {
     };
   }
 
+  async getUserAnalytics() {
+    const totalUsers = await User.countDocuments();
+    const last24Hours = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const newUsersLast24 = await User.countDocuments({ createdAt: { $gte: last24Hours } });
+    
+    const dormDistribution = await User.aggregate([
+      { $group: { _id: '$dorm', count: { $sum: 1 } } },
+      { $sort: { count: -1 } }
+    ]);
+
+    return {
+      totalUsers,
+      newUsersLast24,
+      dormDistribution
+    };
+  }
+
+  async getTransactionAnalytics() {
+    const totalTransactions = await Transaction.countDocuments();
+    const statusDistribution = await Transaction.aggregate([
+      { $group: { _id: '$status', count: { $sum: 1 } } }
+    ]);
+    
+    const last24Hours = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const newTransactionsLast24 = await Transaction.countDocuments({ createdAt: { $gte: last24Hours } });
+
+    return {
+      totalTransactions,
+      statusDistribution,
+      newTransactionsLast24
+    };
+  }
+
+  async getListingAnalytics() {
+    const totalListings = await Listing.countDocuments();
+    const typeDistribution = await Listing.aggregate([
+      { $group: { _id: '$type', count: { $sum: 1 } } }
+    ]);
+    
+    const statusDistribution = await Listing.aggregate([
+      { $group: { _id: '$status', count: { $sum: 1 } } }
+    ]);
+
+    return {
+      totalListings,
+      typeDistribution,
+      statusDistribution
+    };
+  }
+
   async getDashboardMetrics() {
-    const [sessions, pageViews] = await Promise.all([
+    const [sessions, pageViews, users, transactions, listings] = await Promise.all([
       this.getSessionAnalytics(),
       this.getPageViewAnalytics(),
+      this.getUserAnalytics(),
+      this.getTransactionAnalytics(),
+      this.getListingAnalytics()
     ]);
 
     return {
       sessions,
       pageViews,
+      users,
+      transactions,
+      listings
     };
   }
 }
