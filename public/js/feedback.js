@@ -8,10 +8,14 @@
  */
 
 const FeedbackModal = (() => {
+  const configuredFormUrl = document
+    .querySelector('meta[name="feedback-form-url"]')
+    ?.getAttribute('content');
+
   // Configuration - can be set via window.FEEDBACK_CONFIG or defaults
   const CONFIG = {
-    GOOGLE_FORM_URL: (typeof window !== 'undefined' && window.FEEDBACK_CONFIG?.formUrl) || 
-                     'https://forms.google.com/YOUR-FORM-ID',
+    GOOGLE_FORM_URL: configuredFormUrl ||
+                     'https://docs.google.com/forms/d/e/1FAIpQLSfHSOH0zBS5y0x7TNN6zHeGjFqEmVzWAL4hlT7p1JGfLPK4tg/viewform?usp=header',
     TIMER_DELAY: 120000, // 2 minutes in ms
     SESSION_KEY: 'feedbackModalShown',
   };
@@ -31,6 +35,7 @@ const FeedbackModal = (() => {
     return sessionStorage.getItem(CONFIG.SESSION_KEY) === 'true';
   };
 
+  
   /**
    * Mark modal as shown in this session
    */

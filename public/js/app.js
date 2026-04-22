@@ -127,4 +127,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // --------------------------------------------------
+  // 6. CSP-safe confirm-on-submit forms
+  // --------------------------------------------------
+  document.querySelectorAll('form[data-confirm-submit]').forEach((form) => {
+    form.addEventListener('submit', (event) => {
+      const message = form.getAttribute('data-confirm-submit') || 'Are you sure?';
+      if (!window.confirm(message)) {
+        event.preventDefault();
+      }
+    });
+  });
+
 });

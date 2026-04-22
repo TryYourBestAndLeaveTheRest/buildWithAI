@@ -172,11 +172,10 @@
           <% } %>
 
           <% if (canCancel) { %>
-            <form action="/transactions/<%= tx._id %>/cancel" method="POST">
+            <form action="/transactions/<%= tx._id %>/cancel" method="POST" data-confirm-submit="Are you sure you want to cancel this transaction?">
               <input type="text" name="comment" placeholder="Reason for canceling (optional)..."
                 class="w-full bg-slate-900/50 border border-slate-800 rounded-lg px-3 py-2 text-white text-xs placeholder-slate-600 focus:outline-none focus:border-slate-600 transition-colors mb-2">
               <button type="submit"
-                onclick="return confirm('Are you sure you want to cancel this transaction?')"
                 class="w-full py-3 rounded-xl border border-slate-700 text-slate-500 font-cyber text-xs uppercase tracking-widest hover:border-red-500/40 hover:text-red-400 transition-all">
                 Cancel Transaction
               </button>
@@ -247,13 +246,5 @@
     </div>
   </div>
 </div>
-
-<script>
-  // Auto-scroll comment list to bottom on load
-  document.addEventListener('DOMContentLoaded', () => {
-    const list = document.getElementById('comment-list');
-    if (list) list.scrollTop = list.scrollHeight;
-  });
-</script>
 
 <%- include('partials/footer') %>

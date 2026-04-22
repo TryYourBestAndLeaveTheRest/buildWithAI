@@ -105,14 +105,14 @@
                 <span class="action-count"><%= metrics.feedback.conversions %></span>
               </div>
               <div class="progress-bar">
-                <div class="progress-fill" style="width: <%= metrics.feedback.conversions > 0 ? (metrics.feedback.conversions / metrics.feedback.totalFeedback * 100) : 0 %>%;"></div>
+                <div class="progress-fill" data-width="<%= (metrics.feedback.totalFeedback > 0 ? (metrics.feedback.conversions / metrics.feedback.totalFeedback * 100) : 0).toFixed(2) %>"></div>
               </div>
               <div class="action-item">
                 <span class="action-label">❌ Dismissed</span>
                 <span class="action-count"><%= metrics.feedback.dismissals %></span>
               </div>
               <div class="progress-bar">
-                <div class="progress-fill" style="width: <%= metrics.feedback.dismissals > 0 ? (metrics.feedback.dismissals / metrics.feedback.totalFeedback * 100) : 0 %>%;"></div>
+                <div class="progress-fill" data-width="<%= (metrics.feedback.totalFeedback > 0 ? (metrics.feedback.dismissals / metrics.feedback.totalFeedback * 100) : 0).toFixed(2) %>"></div>
               </div>
             </div>
           </div>
@@ -144,7 +144,7 @@
                     <td><strong><%= item.count %></strong></td>
                     <td>
                       <div class="progress-bar">
-                        <div class="progress-fill" style="width: <%= (item.count / metrics.pageViews.totalPageViews * 100) %>%;"></div>
+                        <div class="progress-fill" data-width="<%= (metrics.pageViews.totalPageViews > 0 ? (item.count / metrics.pageViews.totalPageViews * 100) : 0).toFixed(2) %>"></div>
                       </div>
                       <%= ((item.count / metrics.pageViews.totalPageViews) * 100).toFixed(1) %>%
                     </td>
@@ -471,5 +471,7 @@
     }
   }
 </style>
+
+<script src="/js/admin-dashboard.js"></script>
 
 <%- include('partials/footer') %>
