@@ -12,7 +12,7 @@ const FeedbackModal = (() => {
     .querySelector('meta[name="feedback-form-url"]')
     ?.getAttribute('content');
 
-  // Configuration - can be set via window.FEEDBACK_CONFIG or defaults
+  // Configuration - can be set via footer meta tag or defaults
   const CONFIG = {
     GOOGLE_FORM_URL: configuredFormUrl ||
                      'https://docs.google.com/forms/d/e/1FAIpQLSfHSOH0zBS5y0x7TNN6zHeGjFqEmVzWAL4hlT7p1JGfLPK4tg/viewform?usp=header',
